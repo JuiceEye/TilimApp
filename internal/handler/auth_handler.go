@@ -2,7 +2,9 @@ package handler
 
 import (
 	"net/http"
+	"tilimauth/internal/dto"
 	"tilimauth/internal/service"
+	"tilimauth/internal/utils"
 )
 
 type AuthHandler struct {
@@ -25,5 +27,9 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
+	var payload dto.AuthRegistrationRequest
+	if err := utils.ParseJSONRequest(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+	}
 
 }
