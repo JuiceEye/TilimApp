@@ -16,14 +16,14 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 }
 
 func (h *AuthHandler) RegisterRoutes(router *http.ServeMux) {
-	router.HandleFunc("POST /register/", h.Register)
-	router.HandleFunc("POST /login", h.Login)
+	router.HandleFunc("POST /register/", h.handleRegister)
+	router.HandleFunc("POST /login", h.handleLogin)
 }
 
-func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 
 }
