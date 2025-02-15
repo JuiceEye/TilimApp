@@ -2,13 +2,16 @@ package auth
 
 import (
 	"github.com/golang-jwt/jwt/v5"
+	"net/http"
 	"strconv"
 	"tilimauth/internal/config"
+	"tilimauth/internal/utils"
 
 	"time"
 )
 
-func GenerateJWT(secretKey []byte, userID int) (string, error) {
+func GenerateJWT(w http.ResponseWriter, userID int) (string, error) {
+	secretKey := []byte(config.Envs.JWTSecret)
 	expiration := time.Second * time.Duration(config.Envs.JWTExpireSeconds)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -18,6 +21,7 @@ func GenerateJWT(secretKey []byte, userID int) (string, error) {
 
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
 		return "", err
 	}
 
