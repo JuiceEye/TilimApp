@@ -44,6 +44,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusUnprocessableEntity, err)
 		return
 	}
+	//todo: кодировка паролей
 	user := model.User{
 		Username:         payload.Username,
 		Password:         payload.Password,
