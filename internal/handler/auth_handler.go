@@ -39,11 +39,11 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("Parsing request %v", payload)
+	//todo: добавить валидацию для требований к паролю
 	if err := payload.Validate(); err != nil {
 		utils.WriteError(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-
 	user := model.User{
 		Username:         payload.Username,
 		Password:         payload.Password,

@@ -3,6 +3,7 @@ package dto
 import (
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 type AuthRegistrationRequest struct {
@@ -32,7 +33,7 @@ func (req *AuthRegistrationRequest) Validate() error {
 		missingFields = append(missingFields, "phone_number")
 	}
 	if len(missingFields) > 0 {
-		return fmt.Errorf("missing required fields: %v", missingFields)
+		return fmt.Errorf("missing required fields: [%s]", strings.Join(missingFields, ", "))
 	}
 	if !phoneRegex.MatchString(req.PhoneNumber) {
 		err = fmt.Errorf("invalid phone number")
