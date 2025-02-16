@@ -6,11 +6,11 @@ import (
 )
 
 type AuthRegistrationRequest struct {
-	Username string `json:"username"`
-	Password string `json:"Password"`
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	Image    string `json:"image"`
+	Username    string `json:"username"`
+	Password    string `json:"Password"`
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone"`
+	Image       string `json:"image"`
 }
 
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
@@ -28,13 +28,13 @@ func (req *AuthRegistrationRequest) Validate() error {
 	if req.Email == "" {
 		missingFields = append(missingFields, "email")
 	}
-	if req.Phone == "" {
+	if req.PhoneNumber == "" {
 		missingFields = append(missingFields, "phone")
 	}
 	if len(missingFields) > 0 {
 		err = fmt.Errorf("missing required fields: %v", missingFields)
 	}
-	if !phoneRegex.MatchString(req.Phone) {
+	if !phoneRegex.MatchString(req.PhoneNumber) {
 		err = fmt.Errorf("invalid phone number")
 	}
 	if !emailRegex.MatchString(req.Email) {
