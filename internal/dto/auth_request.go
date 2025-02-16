@@ -15,7 +15,7 @@ type AuthRegistrationRequest struct {
 }
 
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-var phoneRegex = regexp.MustCompile(`^\+?[1-9]\d{9, 15}$`)
+var phoneRegex = regexp.MustCompile(`^\+?[1-9]\d{9,15}$`)
 
 func (req *AuthRegistrationRequest) Validate() error {
 	var err error
