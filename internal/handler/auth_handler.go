@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"tilimauth/internal/auth"
 	"tilimauth/internal/dto"
 	"tilimauth/internal/model"
 	"tilimauth/internal/service"
@@ -42,18 +43,24 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		Username:         payload.Username,
 		Password:         payload.Password,
 		Email:            payload.Email,
-		Phone:            payload.Phone,
+		PhoneNumber:      payload.PhoneNumber,
 		Image:            payload.Image,
 		RegistrationDate: time.Now(),
 	}
-	//todo: check for conventions what the best naming practices are for createdUser
+
 	createdUser, err, status := h.service.Register(user)
 	if err != nil {
 		utils.WriteError(w, status, err)
 	}
+
+	token, err := auth.GenerateJWT(w, createdUser.Id)
+	if err != nil {
+		return
+	}
+
 	response := dto.AuthRegistrationResponse{
 		Id:    createdUser.Id,
-		Token: "",
+		Token: token,
 	}
 
 	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]string{
