@@ -21,7 +21,7 @@ func (s *AuthService) Register(user model.User) (*model.User, error, int) {
 		return nil, fmt.Errorf("email already taken"), 400
 	}
 
-	if _, err := s.repository.GetUserByPhone(user.PhoneNumber); err == nil {
+	if _, err := s.repository.GetUserByPhoneNumber(user.PhoneNumber); err == nil {
 		return nil, fmt.Errorf("phone number already taken"), 400
 	}
 

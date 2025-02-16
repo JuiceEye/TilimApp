@@ -37,7 +37,7 @@ func (r *AuthRepository) GetUserByEmail(email string) (*model.User, error) {
 	return u, nil
 }
 
-func (r *AuthRepository) GetUserByPhone(phoneNumber string) (*model.User, error) {
+func (r *AuthRepository) GetUserByPhoneNumber(phoneNumber string) (*model.User, error) {
 	rows, err := r.db.Query("SELECT * FROM users WHERE phone_number = $1", phoneNumber)
 	if err != nil {
 		return nil, err
