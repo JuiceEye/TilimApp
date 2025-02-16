@@ -71,3 +71,19 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 	}
 }
+
+func (h *AuthHandler) handleProtectedRoute(w http.ResponseWriter, r *http.Request) {
+	userID, err := auth.VerifyJWT(r)
+	if err != nil {
+		utils.WriteError(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]string{
+		"message": "Access allowed",
+		"user_id": strconv.Itoa(userID),
+	})
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+	}
+}
