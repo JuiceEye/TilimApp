@@ -15,7 +15,7 @@ type AuthRegistrationRequest struct {
 }
 
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-var phoneRegex = regexp.MustCompile(`^\+?[1-9]\d{1,14}$`)
+var phoneRegex = regexp.MustCompile(`^\+?[1-9]\d{9, 15}$`)
 
 func (req *AuthRegistrationRequest) Validate() error {
 	var err error
@@ -35,11 +35,11 @@ func (req *AuthRegistrationRequest) Validate() error {
 	if len(missingFields) > 0 {
 		return fmt.Errorf("missing required fields: [%s]", strings.Join(missingFields, ", "))
 	}
-	if !phoneRegex.MatchString(req.PhoneNumber) {
-		err = fmt.Errorf("invalid phone number")
-	}
 	if !emailRegex.MatchString(req.Email) {
 		err = fmt.Errorf("invalid email address")
+	}
+	if !phoneRegex.MatchString(req.PhoneNumber) {
+		err = fmt.Errorf("invalid phone number")
 	}
 	return err
 }

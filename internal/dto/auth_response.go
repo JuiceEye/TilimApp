@@ -1,6 +1,6 @@
 package dto
 
 type AuthRegistrationResponse struct {
-	Id    int    `json:"id"`
-	Token string `json:"token"`
+	UserId int    `json:"user_id"`
+	Token  string `json:"token"`
 }

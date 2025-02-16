@@ -67,14 +67,11 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := dto.AuthRegistrationResponse{
-		Id:    createdUser.Id,
-		Token: token,
+		UserId: createdUser.Id,
+		Token:  token,
 	}
 
-	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]string{
-		"user_id": strconv.Itoa(response.Id),
-		"token":   response.Token,
-	})
+	err = utils.WriteJSONResponse(w, http.StatusOK, response)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
