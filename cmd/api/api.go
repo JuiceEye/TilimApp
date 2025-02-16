@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"tilimauth/internal/handler"
 	"tilimauth/internal/repository"
@@ -14,6 +15,7 @@ type Server struct {
 }
 
 func NewServer(address string, db *sql.DB) *Server {
+
 	return &Server{
 		address: address,
 		db:      db,
@@ -28,5 +30,6 @@ func (s *Server) Run() error {
 	userHandler := handler.NewAuthHandler(userService)
 	userHandler.RegisterRoutes(router)
 
+	fmt.Println("Listening on " + s.address)
 	return http.ListenAndServe(s.address, router)
 }
