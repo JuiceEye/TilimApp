@@ -8,13 +8,16 @@ import (
 )
 
 func main() {
-	dbase, err := db.NewDBConnection(db.DBConfig{
+	//todo: пофиксить гавно сделанное для логгирования кек
+	config1 := db.Config{
 		User:     config.Envs.DBUser,
 		Password: config.Envs.DBPassword,
 		Name:     config.Envs.DBName,
 		Host:     config.Envs.DBHost,
-		Port:     config.Envs.DBUser,
-	})
+		Port:     config.Envs.DBPort,
+	}
+	dbase, err := db.NewDBConnection(config1)
+	log.Printf("Connecting to db %v", config1)
 
 	if err != nil {
 		log.Fatal(err)

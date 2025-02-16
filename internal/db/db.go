@@ -3,9 +3,10 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/lib/pq"
 )
 
-type DBConfig struct {
+type Config struct {
 	User     string
 	Password string
 	Name     string
@@ -13,8 +14,8 @@ type DBConfig struct {
 	Port     string
 }
 
-func NewDBConnection(cfg DBConfig) (*sql.DB, error) {
-	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%d sslmode=disable",
+func NewDBConnection(cfg Config) (*sql.DB, error) {
+	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
 		cfg.User, cfg.Password, cfg.Name, cfg.Host, cfg.Port)
 	db, err := sql.Open("postgres", dsn)
 	if err != nil {

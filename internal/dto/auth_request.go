@@ -7,9 +7,9 @@ import (
 
 type AuthRegistrationRequest struct {
 	Username    string `json:"username"`
-	Password    string `json:"Password"`
+	Password    string `json:"password"`
 	Email       string `json:"email"`
-	PhoneNumber string `json:"phone"`
+	PhoneNumber string `json:"phone_number"`
 	Image       string `json:"image"`
 }
 
@@ -29,10 +29,10 @@ func (req *AuthRegistrationRequest) Validate() error {
 		missingFields = append(missingFields, "email")
 	}
 	if req.PhoneNumber == "" {
-		missingFields = append(missingFields, "phone")
+		missingFields = append(missingFields, "phone_number")
 	}
 	if len(missingFields) > 0 {
-		err = fmt.Errorf("missing required fields: %v", missingFields)
+		return fmt.Errorf("missing required fields: %v", missingFields)
 	}
 	if !phoneRegex.MatchString(req.PhoneNumber) {
 		err = fmt.Errorf("invalid phone number")
