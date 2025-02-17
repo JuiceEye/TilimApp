@@ -42,12 +42,12 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Printf("Parsing request %v", payload)
-	//todo: добавить валидацию для требований к паролю
+	//todo: добавить валидацию для требований к паролю (спец. сиволы)
 	if err := payload.Validate(); err != nil {
 		utils.WriteError(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	//todo: кодировка паролей
+	//todo: шифровать пароли
 	user := model.User{
 		Username:         payload.Username,
 		Password:         payload.Password,
@@ -68,7 +68,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusUnauthorized, err)
 		return
 	}
-
+	//todo: узнать как правильно возвращать токены: точно ли просто в body...?
 	response := dto.AuthRegistrationResponse{
 		UserId: createdUser.Id,
 		Token:  token,
