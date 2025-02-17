@@ -30,7 +30,7 @@ func GenerateJWT(w http.ResponseWriter, userID int) (string, error) {
 	return tokenString, err
 }
 
-//todo: add to the middleware layer later
+// todo: add to the middleware layer later
 func VerifyJWT(r *http.Request) (int, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {

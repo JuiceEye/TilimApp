@@ -8,7 +8,8 @@ import (
 )
 
 func ParseJSONRequest(r *http.Request, body any) error {
-	if r.Body == nil {
+	log.Print(r.Body)
+	if r.ContentLength == 0 {
 		return fmt.Errorf("missing body")
 	}
 	return json.NewDecoder(r.Body).Decode(body)
@@ -17,7 +18,8 @@ func ParseJSONRequest(r *http.Request, body any) error {
 func WriteJSONResponse(w http.ResponseWriter, status int, payload any) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	log.Printf("Response: %s", payload)
+	log.Printf("Response: %s \n", payload)
+	log.Printf("-----------------------------------------------------------------------------------------------")
 	return json.NewEncoder(w).Encode(payload)
 }
 

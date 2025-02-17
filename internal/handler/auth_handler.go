@@ -35,6 +35,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	//todo: пофиксить маршалинг постман запроса и узнать как проверять целостность body
 	//(нарушая синтаксис постмана json.decode пытается раскодировать кривой джейсон и ответ ошибки выходит некрасивый)
 	//todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
+	//todo: сделать уникальное логгирование не привязанное к handle методу а к любому запросу
 	//todo: узнать как правильно оформлять код в го и разделять ньюлайнами
 	var payload dto.AuthRegistrationRequest
 	if err := utils.ParseJSONRequest(r, &payload); err != nil {
