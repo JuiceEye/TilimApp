@@ -5,6 +5,7 @@ import (
 	"fmt"
 	_ "github.com/lib/pq"
 	"log"
+	"tilimauth/internal/config"
 )
 
 type Config struct {
@@ -15,7 +16,17 @@ type Config struct {
 	Port     string
 }
 
-func NewDBConnection(cfg Config) (*sql.DB, error) {
+func NewConfig(envs *config.Env) *Config {
+	return &Config{
+		User:     envs.DBUser,
+		Password: envs.DBPassword,
+		Name:     envs.DBName,
+		Host:     envs.DBHost,
+		Port:     envs.DBPort,
+	}
+}
+
+func NewDBConnection(cfg *Config) (*sql.DB, error) {
 	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
 		cfg.User, cfg.Password, cfg.Name, cfg.Host, cfg.Port)
 	db, err := sql.Open("postgres", dsn)
@@ -24,7 +35,7 @@ func NewDBConnection(cfg Config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	log.Printf("Connected to DB")
+	log.Printf("Connected to db %v", cfg)
 
 	return db, nil
 }
