@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 	"tilimauth/internal/auth"
@@ -42,7 +41,6 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
-	log.Printf("Parsing request %v", payload)
 	//todo: добавить валидацию для требований к паролю (спец. сиволы)
 	if err := payload.Validate(); err != nil {
 		utils.WriteError(w, http.StatusUnprocessableEntity, err)

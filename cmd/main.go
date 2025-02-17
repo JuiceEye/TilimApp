@@ -15,7 +15,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	server := api.NewServer(":8080", dbase)
+	server := api.NewServer("0.0.0.0:8080", dbase)
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
 	}
