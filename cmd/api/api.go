@@ -2,7 +2,7 @@ package api
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 	"net/http"
 	"tilimauth/internal/handler"
 	"tilimauth/internal/repository"
@@ -30,6 +30,6 @@ func (s *Server) Run() error {
 	userHandler := handler.NewAuthHandler(userService)
 	userHandler.RegisterRoutes(router)
 
-	fmt.Println("Listening on " + s.address)
+	log.Printf("Listening on %s", s.address)
 	return http.ListenAndServe(s.address, router)
 }

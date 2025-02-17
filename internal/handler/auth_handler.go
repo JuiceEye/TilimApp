@@ -32,7 +32,10 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
-	//todo: пофиксить маршалинг постман запроса и узнать как проверять целостност body (нарушая синтаксис постмана летит хуйня)
+	//todo: пофиксить маршалинг постман запроса и узнать как проверять целостность body
+	//(нарушая синтаксис постмана json.decode пытается раскодировать кривой джейсон и ответ ошибки выходит некрасивый)
+	//todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
+	//todo: узнать как правильно оформлять код в го и разделять ньюлайнами
 	var payload dto.AuthRegistrationRequest
 	if err := utils.ParseJSONRequest(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
