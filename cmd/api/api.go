@@ -15,7 +15,6 @@ type Server struct {
 }
 
 func NewServer(address string, db *sql.DB) *Server {
-
 	return &Server{
 		address: address,
 		db:      db,
@@ -30,6 +29,7 @@ func (s *Server) Run() error {
 	userHandler := handler.NewAuthHandler(userService)
 	userHandler.RegisterRoutes(router)
 
-	log.Printf("Listening on %s", s.address)
+	log.Printf("Starting server on %s...", s.address)
+
 	return http.ListenAndServe(s.address, router)
 }

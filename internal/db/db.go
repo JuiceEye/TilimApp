@@ -9,26 +9,26 @@ import (
 )
 
 type Config struct {
-	User     string
-	Password string
-	Name     string
-	Host     string
-	Port     string
+	user     string
+	password string
+	name     string
+	host     string
+	port     string
 }
 
 func NewConfig(envs *config.Env) *Config {
 	return &Config{
-		User:     envs.DBUser,
-		Password: envs.DBPassword,
-		Name:     envs.DBName,
-		Host:     envs.DBHost,
-		Port:     envs.DBPort,
+		user:     envs.DBUser,
+		password: envs.DBPassword,
+		name:     envs.DBName,
+		host:     envs.DBHost,
+		port:     envs.DBPort,
 	}
 }
 
 func NewDBConnection(cfg *Config) (*sql.DB, error) {
 	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
-		cfg.User, cfg.Password, cfg.Name, cfg.Host, cfg.Port)
+		cfg.user, cfg.password, cfg.name, cfg.host, cfg.port)
 	db, err := sql.Open("postgres", dsn)
 
 	if err != nil {
