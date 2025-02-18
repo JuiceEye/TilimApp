@@ -35,7 +35,7 @@ func NewDBConnection(cfg *Config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	log.Printf("Connected to db %v", cfg)
+	log.Printf("Connected to db %s %s %s", cfg.name, cfg.host, cfg.port)
 
 	return db, nil
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"math/rand"
 	"net/http"
 	"strconv"
 	"tilimauth/internal/auth"
@@ -27,7 +28,38 @@ func (h *AuthHandler) RegisterRoutes(router *http.ServeMux) {
 }
 
 func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
+	var payload dto.AuthLoginRequest
+	if err := utils.ParseJSONRequest(r, &payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+	if !(payload.Username == "test" && payload.Password == "qwerty") &&
+		!(payload.Username == "JuiceEye" && payload.Password == "qwerty") {
+		err := utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": "wrong username or password"})
+		if err != nil {
+			utils.WriteError(w, http.StatusBadRequest, err)
+			return
+		}
+		return
+	}
 
+	rand.Seed(time.Now().UnixNano()) // Seed to ensure randomness
+	randomNumber := rand.Intn(100)   // Generates a random number between 0 and 99
+	token, err := auth.GenerateJWT(w, randomNumber)
+	if err != nil {
+		utils.WriteError(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	response := dto.AuthLoginResponse{
+		Token: token,
+	}
+
+	err = utils.WriteJSONResponse(w, http.StatusOK, response)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
 }
 
 func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
