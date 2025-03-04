@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"tilimauth/internal/dto/request"
 )
 
 func ParseJSONRequest(r *http.Request, body any) error {
@@ -16,6 +17,18 @@ func ParseJSONRequest(r *http.Request, body any) error {
 	}
 
 	return err
+}
+
+func ParseAndValidate(r *http.Request, req request.Request) error {
+	if err := ParseJSONRequest(r, req); err != nil {
+		return err
+	}
+
+	if err := req.Validate(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func WriteJSONResponse(w http.ResponseWriter, status int, payload any) error {

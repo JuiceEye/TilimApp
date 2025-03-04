@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"tilimauth/internal/auth"
 	"tilimauth/internal/dto"
+	"tilimauth/internal/dto/request"
 	"tilimauth/internal/model"
 	"tilimauth/internal/service"
 	"tilimauth/internal/utils"
@@ -28,7 +29,7 @@ func (h *AuthHandler) RegisterRoutes(router *http.ServeMux) {
 }
 
 func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
-	var payload dto.AuthLoginRequest
+	var payload request.AuthLoginRequest
 	if err := utils.ParseJSONRequest(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
@@ -68,8 +69,8 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	//todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
 	//todo: сделать уникальное логгирование не привязанное к handle методу а к любому запросу
 	//todo: узнать как правильно оформлять код в го и разделять ньюлайнами
-	var payload dto.AuthRegistrationRequest
-	if err := utils.ParseJSONRequest(r, &payload); err != nil {
+	var payload = request.AuthRegistrationRequest{}
+	if err := utils.ParseAndValidate(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
