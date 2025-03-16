@@ -63,22 +63,23 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// todo: пофиксить маршалинг постман запроса и узнать как проверять целостность body
+// (нарушая синтаксис постмана json.decode пытается раскодировать кривой джейсон и ответ ошибки выходит некрасивый)
+// todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
+// todo: сделать уникальное логгирование не привязанное к handle методу а к любому запросу
 func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
-	//todo: пофиксить маршалинг постман запроса и узнать как проверять целостность body
-	//(нарушая синтаксис постмана json.decode пытается раскодировать кривой джейсон и ответ ошибки выходит некрасивый)
-	//todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
-	//todo: сделать уникальное логгирование не привязанное к handle методу а к любому запросу
-	//todo: узнать как правильно оформлять код в го и разделять ньюлайнами
+	//todo: добавить валидацию для требований к паролю (спец. сиволы)
 	var payload = request.AuthRegistrationRequest{}
 	if err := utils.ParseAndValidate(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
-	//todo: добавить валидацию для требований к паролю (спец. сиволы)
+
 	if err := payload.Validate(); err != nil {
 		utils.WriteError(w, http.StatusUnprocessableEntity, err)
 		return
 	}
+
 	//todo: шифровать пароли
 	user := model.User{
 		Username:         payload.Username,
@@ -100,6 +101,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusUnauthorized, err)
 		return
 	}
+
 	//todo: узнать как правильно возвращать токены: точно ли просто в body...?
 	response := dto.AuthRegistrationResponse{
 		UserId: createdUser.Id,

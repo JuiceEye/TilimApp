@@ -1,6 +1,7 @@
 package request
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -17,8 +18,8 @@ type AuthRegistrationRequest struct {
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
 var phoneRegex = regexp.MustCompile(`^\+?[1-9]\d{9,15}$`)
 
-func (req *AuthRegistrationRequest) Validate() error {
-	var err error
+func (req *AuthRegistrationRequest) Validate() (err error) {
+	var errs []error
 	var missingFields []string
 	if req.Username == "" {
 		missingFields = append(missingFields, "username")
@@ -41,7 +42,7 @@ func (req *AuthRegistrationRequest) Validate() error {
 	if !phoneRegex.MatchString(req.PhoneNumber) {
 		err = fmt.Errorf("invalid phone number")
 	}
-	return err
+	return errors.Join(errs...)
 }
 
 type AuthLoginRequest struct {
