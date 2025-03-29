@@ -63,13 +63,10 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// todo: пофиксить маршалинг постман запроса и узнать как проверять целостность body
-// (нарушая синтаксис постмана json.decode пытается раскодировать кривой джейсон и ответ ошибки выходит некрасивый)
 // todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
-// todo: сделать уникальное логгирование не привязанное к handle методу а к любому запросу
 func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	//todo: добавить валидацию для требований к паролю (спец. сиволы)
-	var payload = request.AuthRegistrationRequest{}
+	payload := request.AuthRegistrationRequest{}
 	if err := utils.ParseAndValidate(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
