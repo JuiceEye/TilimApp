@@ -85,7 +85,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		RegistrationDate: time.Now(),
 	}
 
-	createdUser, err, status := h.service.Register(user)
+	createdUser, status, err := h.service.Register(user)
 	if err != nil {
 		utils.WriteError(w, status, err)
 		return
