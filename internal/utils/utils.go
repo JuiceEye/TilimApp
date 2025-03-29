@@ -10,12 +10,14 @@ import (
 )
 
 func ParseJSONRequest(r *http.Request, body any) error {
-	err := json.NewDecoder(r.Body).Decode(body)
-	log.Printf("Parsing request %v", body)
-
 	if r.ContentLength == 0 {
 		return fmt.Errorf("missing body")
 	}
+
+	err := json.NewDecoder(r.Body).Decode(body)
+
+	jsonBody, _ := json.MarshalIndent(body, "", "  ")
+	log.Printf("Parsing request %v", string(jsonBody))
 
 	return err
 }
@@ -35,8 +37,9 @@ func ParseAndValidate(r *http.Request, req request.Request) error {
 func WriteJSONResponse(w http.ResponseWriter, status int, payload any) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	log.Printf("Response: %v \n", payload)
-	log.Printf("-----------------------------------------------------------------------------------------------")
+	jsonPayload, _ := json.MarshalIndent(payload, "", "  ")
+	log.Printf("Response: %v \n", string(jsonPayload))
+	fmt.Printf("-----------------------------------------------------------------------------------------------")
 	return json.NewEncoder(w).Encode(payload)
 }
 
