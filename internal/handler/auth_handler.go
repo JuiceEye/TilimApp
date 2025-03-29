@@ -75,11 +75,6 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := payload.Validate(); err != nil {
-		utils.WriteError(w, http.StatusUnprocessableEntity, err)
-		return
-	}
-
 	//todo: шифровать пароли
 	user := model.User{
 		Username:         payload.Username,
