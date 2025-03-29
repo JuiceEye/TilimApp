@@ -74,7 +74,7 @@ func (r *AuthRepository) GetUserByUsername(username string) (u *model.User, stat
 	}
 
 	if u.Id == 0 {
-		return nil, http.StatusBadRequest, errors.New("user not found")
+		return nil, http.StatusNotFound, errors.New("user not found")
 	}
 
 	return u, http.StatusOK, nil
