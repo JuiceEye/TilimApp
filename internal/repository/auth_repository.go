@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"net/http"
 	"tilimauth/internal/model"
 )
 
@@ -16,69 +17,67 @@ func NewAuthRepo(db *sql.DB) *AuthRepository {
 	}
 }
 
-func (r *AuthRepository) GetUserByEmail(email string) (*model.User, error) {
+func (r *AuthRepository) GetUserByEmail(email string) (u *model.User, code int, err error) {
 	rows, err := r.db.Query("SELECT * FROM auth.users WHERE email = $1::TEXT", email)
 	if err != nil {
-
-		return nil, err
+		return nil, http.StatusInternalServerError, err
 	}
 
-	u := new(model.User)
+	u = new(model.User)
 	for rows.Next() {
 		u, err = scanRowIntoUsers(rows)
 		if err != nil {
-			return nil, err
+			return nil, http.StatusInternalServerError, err
 		}
 	}
 
 	if u.Id == 0 {
-		return nil, errors.New("user not found")
+		return nil, http.StatusNotFound, errors.New("user not found")
 	}
 
-	return u, nil
+	return u, http.StatusOK, nil
 }
 
-func (r *AuthRepository) GetUserByPhoneNumber(phoneNumber string) (*model.User, error) {
+func (r *AuthRepository) GetUserByPhoneNumber(phoneNumber string) (u *model.User, status int, err error) {
 	rows, err := r.db.Query("SELECT * FROM auth.users WHERE phone_number = $1::TEXT", phoneNumber)
 	if err != nil {
-
-		return nil, err
+		return nil, http.StatusInternalServerError, err
 	}
 
-	u := new(model.User)
+	u = new(model.User)
 	for rows.Next() {
 		u, err = scanRowIntoUsers(rows)
 		if err != nil {
-			return nil, err
+			return nil, http.StatusInternalServerError, err
 		}
 	}
 
 	if u.Id == 0 {
-		return nil, errors.New("user not found")
+		return nil, http.StatusNotFound, errors.New("user not found")
 	}
 
-	return u, nil
+	return u, http.StatusOK, nil
 }
 
-func (r *AuthRepository) GetUserByUsername(username string) (*model.User, error) {
+func (r *AuthRepository) GetUserByUsername(username string) (u *model.User, status int, err error) {
 	rows, err := r.db.Query("SELECT * FROM auth.users WHERE username = $1::TEXT", username)
 	if err != nil {
-		return nil, err
+		return nil, http.StatusInternalServerError, err
 	}
 
-	u := new(model.User)
+	u = new(model.User)
 	for rows.Next() {
 		u, err = scanRowIntoUsers(rows)
 		if err != nil {
-			return nil, err
+			return nil, http.StatusInternalServerError, err
 		}
 	}
 
 	if u.Id == 0 {
-		return nil, errors.New("user not found")
+		return nil, http.StatusBadRequest, errors.New("user not found")
 	}
 
-	return u, nil
+	return u, http.StatusOK, nil
 }
 
 func (r *AuthRepository) CreateUser(user *model.User) (*model.User, error) {
