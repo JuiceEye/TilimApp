@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -21,7 +22,7 @@ func ParseJSONRequest(r *http.Request, body any) error {
 
 func ParseAndValidate(r *http.Request, req request.Request) error {
 	if err := ParseJSONRequest(r, req); err != nil {
-		return err
+		return errors.New("invalid JSON request")
 	}
 
 	if err := req.Validate(); err != nil {
