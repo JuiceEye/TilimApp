@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"tilimauth/internal/model"
@@ -18,22 +19,22 @@ func NewAuthService(repository *repository.AuthRepository) *AuthService {
 }
 
 func (s *AuthService) Register(user model.User) (createdUser *model.User, status int, err error) {
-	if _, status, err := s.repository.GetUserByEmail(user.Email); status == http.StatusOK {
+	if _, err := s.repository.GetUserByEmail(user.Email); err == nil {
 		return nil, http.StatusBadRequest, fmt.Errorf("email already taken")
-	} else if status != http.StatusNotFound {
-		return nil, status, err
+	} else if !errors.Is(err, repository.ErrNotFound) {
+		return nil, http.StatusInternalServerError, err
 	}
 
-	if _, status, err = s.repository.GetUserByPhoneNumber(user.PhoneNumber); status == http.StatusOK {
+	if _, err = s.repository.GetUserByPhoneNumber(user.PhoneNumber); err == nil {
 		return nil, http.StatusBadRequest, fmt.Errorf("phone number already taken")
-	} else if status != http.StatusNotFound {
-		return nil, status, err
+	} else if !errors.Is(err, repository.ErrNotFound) {
+		return nil, http.StatusInternalServerError, err
 	}
 
-	if _, status, err = s.repository.GetUserByUsername(user.Username); status == http.StatusOK {
+	if _, err = s.repository.GetUserByUsername(user.Username); err == nil {
 		return nil, http.StatusBadRequest, fmt.Errorf("username already taken")
-	} else if status != http.StatusNotFound {
-		return nil, status, err
+	} else if !errors.Is(err, repository.ErrNotFound) {
+		return nil, http.StatusInternalServerError, err
 	}
 
 	createdUser, err = s.repository.CreateUser(&user)
