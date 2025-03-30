@@ -39,7 +39,7 @@ func WriteJSONResponse(w http.ResponseWriter, status int, payload any) error {
 	w.WriteHeader(status)
 	jsonPayload, _ := json.MarshalIndent(payload, "", "  ")
 	log.Printf("Response: %v \n", string(jsonPayload))
-	fmt.Printf("-----------------------------------------------------------------------------------------------")
+	fmt.Println("-----------------------------------------------------------------------------------------------")
 	return json.NewEncoder(w).Encode(payload)
 }
 
