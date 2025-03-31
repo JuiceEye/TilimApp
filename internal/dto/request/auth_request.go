@@ -49,3 +49,18 @@ type AuthLoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
+
+func (req *AuthLoginRequest) Validate() (err error) {
+	var missingFields []string
+	if req.Username == "" {
+		missingFields = append(missingFields, "username")
+	}
+	if req.Password == "" {
+		missingFields = append(missingFields, "password")
+	}
+	if len(missingFields) > 0 {
+		return fmt.Errorf("missing required fields: [%s]", strings.Join(missingFields, ", "))
+	}
+
+	return nil
+}
