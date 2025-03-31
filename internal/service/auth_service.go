@@ -36,7 +36,8 @@ func (s *AuthService) Register(user model.User) (createdUser *model.User, status
 	} else if !errors.Is(err, repository.ErrNotFound) {
 		return nil, http.StatusInternalServerError, err
 	}
-	user.Password = Bcrypt(user.Password)
+
+	//user.Password = Bcrypt(user.Password)
 	createdUser, err = s.repository.CreateUser(&user)
 	if err != nil {
 		return nil, http.StatusInternalServerError, err

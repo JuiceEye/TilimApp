@@ -1,4 +1,4 @@
-package dto
+package response
 
 type AuthRegistrationResponse struct {
 	UserId int    `json:"user_id"`
