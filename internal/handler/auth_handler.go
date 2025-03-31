@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 	"tilimauth/internal/auth"
-	"tilimauth/internal/dto"
 	"tilimauth/internal/dto/request"
+	"tilimauth/internal/dto/response"
 	"tilimauth/internal/model"
 	"tilimauth/internal/service"
 	"tilimauth/internal/utils"
@@ -30,30 +30,30 @@ func (h *AuthHandler) RegisterRoutes(router *http.ServeMux) {
 
 func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var payload request.AuthLoginRequest
-	if err := utils.ParseJSONRequest(r, &payload); err != nil {
+	if err := utils.ParseAndValidate(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
-	if !(payload.Username == "test" && payload.Password == "qwerty") &&
-		!(payload.Username == "JuiceEye" && payload.Password == "qwerty") {
-		err := utils.WriteJSONResponse(w, http.StatusBadRequest, map[string]string{"error": "wrong username or password"})
-		if err != nil {
-			utils.WriteError(w, http.StatusBadRequest, err)
-			return
-		}
+
+	//todo: зашифровать пароль для сравнения но хз где это делается тут или в сервисе
+	//payload.Password = payload.Password
+
+	createdUser, status, err := h.service.Register(user)
+	if err != nil {
+		utils.WriteError(w, status, err)
 		return
 	}
 
-	rand.Seed(time.Now().UnixNano()) // Seed to ensure randomness
-	randomNumber := rand.Intn(100)   // Generates a random number between 0 and 99
-	token, err := auth.GenerateJWT(w, randomNumber)
+	token, err := auth.GenerateJWT(w, createdUser.Id)
 	if err != nil {
 		utils.WriteError(w, http.StatusUnauthorized, err)
 		return
 	}
 
-	response := dto.AuthLoginResponse{
-		Token: token,
+	//todo: узнать как правильно возвращать токены: точно ли просто в body...?
+	response := response.AuthRegistrationResponse{
+		UserId: createdUser.Id,
+		Token:  token,
 	}
 
 	err = utils.WriteJSONResponse(w, http.StatusOK, response)
@@ -95,7 +95,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//todo: узнать как правильно возвращать токены: точно ли просто в body...?
-	response := dto.AuthRegistrationResponse{
+	response := response.AuthRegistrationResponse{
 		UserId: createdUser.Id,
 		Token:  token,
 	}
