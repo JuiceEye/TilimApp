@@ -5,11 +5,11 @@ import (
 )
 
 type ReadProfileRequest struct {
-	UserId int64 `json:"user_id"`
+	UserID int64 `json:"user_id"`
 }
 
 func (req *ReadProfileRequest) ValidateRequest() (err error) {
-	if req.UserId <= 0 {
+	if req.UserID <= 0 {
 		return errors.New("user_id must be greater than zero")
 	}
 
