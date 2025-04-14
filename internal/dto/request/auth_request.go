@@ -18,7 +18,7 @@ type AuthRegistrationRequest struct {
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
 var phoneRegex = regexp.MustCompile(`^\+?[1-9]\d{9,15}$`)
 
-func (req *AuthRegistrationRequest) Validate() (err error) {
+func (req *AuthRegistrationRequest) ValidateRequest() (err error) {
 	var missingFields []string
 	if req.Username == "" {
 		missingFields = append(missingFields, "username")
@@ -50,7 +50,7 @@ type AuthLoginRequest struct {
 	Password string `json:"password"`
 }
 
-func (req *AuthLoginRequest) Validate() (err error) {
+func (req *AuthLoginRequest) ValidateRequest() (err error) {
 	var missingFields []string
 	if req.Username == "" {
 		missingFields = append(missingFields, "username")
