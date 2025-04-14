@@ -29,7 +29,7 @@ func (h *AuthHandler) RegisterRoutes(router *http.ServeMux) {
 
 func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var payload request.AuthLoginRequest
-	if err := utils.ParseAndValidate(r, &payload); err != nil {
+	if err := utils.ParseBodyAndValidate(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
@@ -45,7 +45,7 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	// todo: добавить валидацию для требований к паролю (спец. сиволы)
 	payload := request.AuthRegistrationRequest{}
-	if err := utils.ParseAndValidate(r, &payload); err != nil {
+	if err := utils.ParseBodyAndValidate(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}

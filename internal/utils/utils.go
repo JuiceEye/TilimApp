@@ -9,7 +9,7 @@ import (
 	"tilimauth/internal/dto/request"
 )
 
-func ParseJSONRequest(r *http.Request, body any) error {
+func ParseRequestBody(r *http.Request, body any) error {
 	if r.ContentLength == 0 {
 		return fmt.Errorf("missing body")
 	}
@@ -22,12 +22,12 @@ func ParseJSONRequest(r *http.Request, body any) error {
 	return err
 }
 
-func ParseAndValidate(r *http.Request, req request.Request) error {
-	if err := ParseJSONRequest(r, req); err != nil {
+func ParseBodyAndValidate(r *http.Request, req request.Request) error {
+	if err := ParseRequestBody(r, req); err != nil {
 		return errors.New("invalid JSON request")
 	}
 
-	if err := req.Validate(); err != nil {
+	if err := req.ValidateRequest(); err != nil {
 		return err
 	}
 
