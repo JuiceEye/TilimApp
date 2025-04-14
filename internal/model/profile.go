@@ -1,10 +1,13 @@
 package model
 
+import "time"
+
 type Profile struct {
-	UserID      int64  `json:"id"`
-	Username    string `json:"username"`
-	Password    string `json:"password"`
-	Email       string `json:"email"`
-	PhoneNumber string `json:"phone_number"`
-	Image       string `json:"image"`
+	UserID           int64
+	Username         string
+	RegistrationDate time.Time
+	StreakDays       int
+	XPPoints         int
+	WordsLearned     int
+	LessonsDone      int
 }
