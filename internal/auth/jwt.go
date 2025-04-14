@@ -12,12 +12,12 @@ import (
 	"time"
 )
 
-func GenerateJWT(w http.ResponseWriter, userID int) (string, error) {
+func GenerateJWT(w http.ResponseWriter, userID int64) (string, error) {
 	secretKey := []byte(config.Envs.JWTSecret)
 	expiration := time.Second * time.Duration(config.Envs.JWTExpireSeconds)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id":   strconv.Itoa(userID),
+		"user_id":   strconv.FormatInt(userID, 10),
 		"expiredAt": time.Now().Add(expiration).Unix(),
 	})
 
