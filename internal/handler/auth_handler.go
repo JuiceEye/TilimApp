@@ -73,12 +73,12 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// todo: узнать как правильно возвращать токены: точно ли просто в body...?
-	response := response.AuthRegistrationResponse{
+	registerResponse := response.AuthRegistrationResponse{
 		UserID: createdUser.ID,
 		Token:  token,
 	}
 
-	err = utils.WriteJSONResponse(w, http.StatusOK, response)
+	err = utils.WriteJSONResponse(w, http.StatusOK, registerResponse)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
