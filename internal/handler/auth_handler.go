@@ -66,7 +66,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := auth.GenerateJWT(w, createdUser.Id)
+	token, err := auth.GenerateJWT(w, createdUser.ID)
 	if err != nil {
 		utils.WriteError(w, http.StatusUnauthorized, err)
 		return
@@ -74,7 +74,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 
 	// todo: узнать как правильно возвращать токены: точно ли просто в body...?
 	response := response.AuthRegistrationResponse{
-		UserID: createdUser.Id,
+		UserID: createdUser.ID,
 		Token:  token,
 	}
 

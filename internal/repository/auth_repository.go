@@ -30,7 +30,7 @@ func (r *AuthRepository) GetUserByEmail(email string) (*model.User, error) {
 		}
 	}
 
-	if u.Id == 0 {
+	if u.ID == 0 {
 		return nil, ErrNotFound
 	}
 
@@ -52,7 +52,7 @@ func (r *AuthRepository) GetUserByPhoneNumber(phoneNumber string) (*model.User, 
 		}
 	}
 
-	if u.Id == 0 {
+	if u.ID == 0 {
 		return nil, ErrNotFound
 	}
 
@@ -74,7 +74,7 @@ func (r *AuthRepository) GetUserByUsername(username string) (*model.User, error)
 		}
 	}
 
-	if u.Id == 0 {
+	if u.ID == 0 {
 		return nil, ErrNotFound
 	}
 
@@ -91,7 +91,7 @@ func (r *AuthRepository) CreateUser(user *model.User) (*model.User, error) {
 		user.PhoneNumber,
 		user.Image,
 		user.RegistrationDate,
-	).Scan(&user.Id)
+	).Scan(&user.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func scanRowIntoUsers(rows *sql.Rows) (*model.User, error) {
 	user := new(model.User)
 
 	err := rows.Scan(
-		&user.Id,
+		&user.ID,
 		&user.Username,
 		&user.Password,
 		&user.Email,
