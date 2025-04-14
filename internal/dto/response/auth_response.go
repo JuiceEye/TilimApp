@@ -1,7 +1,7 @@
 package response
 
 type AuthRegistrationResponse struct {
-	UserID int    `json:"user_id"`
+	UserID int64  `json:"user_id"`
 	Token  string `json:"token"`
 }
 
