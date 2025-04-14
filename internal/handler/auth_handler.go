@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"math/rand"
 	"net/http"
 	"strconv"
 	"tilimauth/internal/auth"
@@ -34,45 +33,24 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
-
-	//todo: зашифровать пароль для сравнения но хз где это делается тут или в сервисе
-	//payload.Password = payload.Password
-
-	createdUser, status, err := h.service.Register(user)
-	if err != nil {
-		utils.WriteError(w, status, err)
-		return
-	}
-
-	token, err := auth.GenerateJWT(w, createdUser.Id)
-	if err != nil {
-		utils.WriteError(w, http.StatusUnauthorized, err)
-		return
-	}
-
-	//todo: узнать как правильно возвращать токены: точно ли просто в body...?
-	response := response.AuthRegistrationResponse{
-		UserId: createdUser.Id,
-		Token:  token,
-	}
-
-	err = utils.WriteJSONResponse(w, http.StatusOK, response)
-	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
-		return
-	}
+	// todo: зашифровать пароль для сравнения но хз где это делается тут или в сервисе
+	// err = utils.WriteJSONResponse(w, http.StatusOK, response)
+	// if err != nil {
+	// 	utils.WriteError(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
 }
 
 // todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
 func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
-	//todo: добавить валидацию для требований к паролю (спец. сиволы)
+	// todo: добавить валидацию для требований к паролю (спец. сиволы)
 	payload := request.AuthRegistrationRequest{}
 	if err := utils.ParseAndValidate(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	//todo: шифровать пароли
+	// todo: шифровать пароли
 	user := model.User{
 		Username:         payload.Username,
 		Password:         payload.Password,
@@ -94,7 +72,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//todo: узнать как правильно возвращать токены: точно ли просто в body...?
+	// todo: узнать как правильно возвращать токены: точно ли просто в body...?
 	response := response.AuthRegistrationResponse{
 		UserId: createdUser.Id,
 		Token:  token,
