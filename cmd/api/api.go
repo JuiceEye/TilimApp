@@ -29,6 +29,11 @@ func (s *Server) Run() error {
 	userHandler := handler.NewAuthHandler(userService)
 	userHandler.RegisterRoutes(router)
 
+	profileRepo := repository.NewProfileRepo(s.db)
+	profileService := service.NewProfileService(profileRepo)
+	profileHandler := handler.NewProfileHandler(profileService)
+	profileHandler.RegisterRoutes(router)
+
 	log.Printf("Starting server on %s...", s.address)
 
 	return http.ListenAndServe(s.address, router)
