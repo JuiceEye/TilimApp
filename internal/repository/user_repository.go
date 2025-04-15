@@ -82,7 +82,10 @@ func (r *UserRepository) GetUserByPhoneNumber(phoneNumber string) (*model.User, 
 }
 
 func (r *UserRepository) GetUserByUsername(username string) (*model.User, error) {
-	rows, err := r.db.Query("SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE username = $1::TEXT", username)
+	rows, err := r.db.Query(
+		"SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE username = $1::TEXT",
+		username,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +108,8 @@ func (r *UserRepository) GetUserByUsername(username string) (*model.User, error)
 
 func (r *UserRepository) CreateUser(user *model.User) (*model.User, error) {
 	err := r.db.QueryRow(
-		"INSERT INTO auth.users (username, password, email, phone_number, image, registration_date) "+
-			"VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+		`INSERT INTO auth.users (username, password, email, phone_number, image, registration_date) 
+		VALUES ($1::TEXT, $2::TEXT, $3::TEXT, $4::TEXT, $5::TEXT, $6::TIMESTAMPTZ) RETURNING id`,
 		user.Username,
 		user.Password,
 		user.Email,
@@ -114,9 +117,11 @@ func (r *UserRepository) CreateUser(user *model.User) (*model.User, error) {
 		user.Image,
 		user.RegistrationDate,
 	).Scan(&user.ID)
+
 	if err != nil {
 		return nil, err
 	}
+
 	return user, nil
 }
 
