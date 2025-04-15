@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strings"
+	"tilimauth/internal/dto/request"
 	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
 )
@@ -65,7 +65,7 @@ func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int,
 	var user *model.User
 	var err error
 
-	if isEmail(usernameOrEmail) {
+	if request.EmailRegex.MatchString(usernameOrEmail) {
 		user, err = s.userRepository.GetUserByEmail(usernameOrEmail)
 	} else {
 		user, err = s.userRepository.GetUserByUsername(usernameOrEmail)
@@ -83,9 +83,4 @@ func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int,
 	//}
 
 	return user, http.StatusOK, nil
-}
-
-func isEmail(input string) bool {
-	return strings.Contains(input, "@") && strings.Contains(input, ".") //чекаем есть ли собачка и точка - главные идентификаторы имейла
-
 }
