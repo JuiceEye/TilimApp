@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"tilimauth/internal/dto/request"
 	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
+	"tilimauth/internal/utils"
 )
 
 type AuthService struct {
@@ -65,7 +65,7 @@ func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int,
 	var user *model.User
 	var err error
 
-	if request.EmailRegex.MatchString(usernameOrEmail) {
+	if utils.EmailRegex.MatchString(usernameOrEmail) {
 		user, err = s.userRepository.GetUserByEmail(usernameOrEmail)
 	} else {
 		user, err = s.userRepository.GetUserByUsername(usernameOrEmail)

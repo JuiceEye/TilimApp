@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"tilimauth/internal/utils"
 )
 
 type AuthRegistrationRequest struct {
@@ -14,9 +15,6 @@ type AuthRegistrationRequest struct {
 	PhoneNumber string `json:"phone_number"`
 	Image       string `json:"image"`
 }
-
-var EmailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-var PhoneRegex = regexp.MustCompile(`^\+?[1-9]\d{9,15}$`)
 
 func (req *AuthRegistrationRequest) ValidateRequest() (err error) {
 	var missingFields []string
@@ -35,10 +33,10 @@ func (req *AuthRegistrationRequest) ValidateRequest() (err error) {
 	if len(missingFields) > 0 {
 		return fmt.Errorf("missing required fields: [%s]", strings.Join(missingFields, ", "))
 	}
-	if !EmailRegex.MatchString(req.Email) {
+	if !utils.EmailRegex.MatchString(req.Email) {
 		return errors.New("invalid email address")
 	}
-	if !PhoneRegex.MatchString(req.PhoneNumber) {
+	if !utils.MatchString(req.PhoneNumber) {
 		return errors.New("invalid phone number")
 	}
 
