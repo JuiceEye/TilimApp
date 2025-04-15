@@ -25,12 +25,13 @@ func (s *Server) Run() error {
 	router := http.NewServeMux()
 
 	userRepo := repository.NewUserRepo(s.db)
-	userService := service.NewAuthService(userRepo)
+	userProgressRepo := repository.NewUserProgressRepo(s.db)
+
+	userService := service.NewAuthService(userRepo, userProgressRepo)
 	userHandler := handler.NewAuthHandler(userService)
 	userHandler.RegisterRoutes(router)
 
-	profileRepo := repository.NewProfileRepo(s.db)
-	profileService := service.NewProfileService(profileRepo)
+	profileService := service.NewProfileService(userRepo, userProgressRepo)
 	profileHandler := handler.NewProfileHandler(profileService)
 	profileHandler.RegisterRoutes(router)
 
