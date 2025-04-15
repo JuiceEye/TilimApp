@@ -15,8 +15,30 @@ func NewUserRepo(db *sql.DB) *UserRepository {
 	}
 }
 
+func (r *UserRepository) GetUserByID(UserID int64) (*model.User, error) {
+	rows, err := r.db.Query("SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE id = $1::INTEGER", UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	u := new(model.User)
+	for rows.Next() {
+		u, err = scanRowIntoUsers(rows)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if u.ID == 0 {
+		return nil, ErrNotFound
+	}
+
+	return u, nil
+}
+
 func (r *UserRepository) GetUserByEmail(email string) (*model.User, error) {
-	rows, err := r.db.Query("SELECT * FROM auth.users WHERE email = $1::TEXT", email)
+	rows, err := r.db.Query("SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE email = $1::TEXT", email)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +60,7 @@ func (r *UserRepository) GetUserByEmail(email string) (*model.User, error) {
 }
 
 func (r *UserRepository) GetUserByPhoneNumber(phoneNumber string) (*model.User, error) {
-	rows, err := r.db.Query("SELECT * FROM auth.users WHERE phone_number = $1::TEXT", phoneNumber)
+	rows, err := r.db.Query("SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE phone_number = $1::TEXT", phoneNumber)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +82,7 @@ func (r *UserRepository) GetUserByPhoneNumber(phoneNumber string) (*model.User, 
 }
 
 func (r *UserRepository) GetUserByUsername(username string) (*model.User, error) {
-	rows, err := r.db.Query("SELECT * FROM auth.users WHERE username = $1::TEXT", username)
+	rows, err := r.db.Query("SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE username = $1::TEXT", username)
 	if err != nil {
 		return nil, err
 	}
@@ -104,10 +126,8 @@ func scanRowIntoUsers(rows *sql.Rows) (*model.User, error) {
 	err := rows.Scan(
 		&user.ID,
 		&user.Username,
-		&user.Password,
 		&user.Email,
 		&user.PhoneNumber,
-		&user.Image,
 		&user.RegistrationDate,
 	)
 
