@@ -41,29 +41,29 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	// 	return
 	// }
 
-	//user, status, err := h.service.Login(payload.Username, payload.Password)
-	//if err != nil {
-	//	utils.WriteError(w, status, err)
-	//	return
-	//}
-	//
-	//tokens, err := auth.GenerateTokenPair(w, userID)
-	//if err != nil {
-	//	utils.WriteError(w, http.StatusInternalServerError, err)
-	//	return
-	//}
-	//
-	//loginResponse := response.AuthLoginResponse{
-	//	UserID: userID,
-	//	Tokens: tokens,
-	//}
-	//
-	//// Отправляем ответ
-	//err = utils.WriteJSONResponse(w, http.StatusOK, loginResponse)
-	//if err != nil {
-	//	utils.WriteError(w, http.StatusInternalServerError, err)
-	//	return
-	//}
+	user, status, err := h.service.Login(payload.Username, payload.Password)
+	if err != nil {
+		utils.WriteError(w, status, err)
+		return
+	}
+
+	tokens, err := auth.GenerateTokenPair(w, user.ID)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	loginResponse := response.AuthLoginResponse{
+		UserID: user.ID,
+		Tokens: tokens,
+	}
+
+	err = utils.WriteJSONResponse(w, http.StatusOK, loginResponse)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
 }
 
 // todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
