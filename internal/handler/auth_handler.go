@@ -98,7 +98,6 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// todo: узнать как правильно возвращать токены: точно ли просто в body...?
 	registerResponse := response.AuthRegistrationResponse{
 		UserID: createdUser.ID,
 		Tokens: tokens,
