@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"tilimauth/internal/auth"
@@ -76,10 +77,15 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// todo: шифровать пароли
+	hashedPassword, err := utils.HashPassword(payload.Password)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("failed to hash password: %w", err))
+		return
+	}
+
 	user := model.User{
 		Username:         payload.Username,
-		Password:         payload.Password,
+		Password:         hashedPassword,
 		Email:            payload.Email,
 		PhoneNumber:      payload.PhoneNumber,
 		Image:            payload.Image,
