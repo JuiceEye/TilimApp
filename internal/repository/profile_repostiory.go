@@ -15,8 +15,8 @@ func NewProfileRepo(db *sql.DB) *ProfileRepository {
 	}
 }
 
-func (r *ProfileRepository) GetProfileById(id int64) (*model.Profile, error) {
-	rows, err := r.db.Query("SELECT * FROM auth.users WHERE id = $1::INTEGER", id)
+func (r *ProfileRepository) GetProfileByID(id int64) (*model.Profile, error) {
+	rows, err := r.db.Query("SELECT id, username, registration_date FROM auth.users WHERE id = $1::INTEGER", id)
 	if err != nil {
 		return nil, err
 	}
@@ -43,11 +43,7 @@ func scanRowIntoProfiles(rows *sql.Rows) (*model.Profile, error) {
 	err := rows.Scan(
 		&profile.UserID,
 		&profile.Username,
-		nil,
-		&profile.StreakDays,
-		&profile.XPPoints,
-		&profile.WordsLearned,
-		&profile.LessonsDone,
+		&profile.RegistrationDate,
 	)
 
 	if err != nil {

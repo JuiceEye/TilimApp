@@ -18,7 +18,7 @@ func NewProfileService(repository *repository.ProfileRepository) *ProfileService
 }
 
 func (s *ProfileService) GetProfile(userID int64) (profile *model.Profile, status int, err error) {
-	profile, err = s.repository.GetProfileById(userID)
+	profile, err = s.repository.GetProfileByID(userID)
 	if errors.Is(err, repository.ErrNotFound) {
 		return nil, http.StatusNotFound, err
 	} else if err != nil {
