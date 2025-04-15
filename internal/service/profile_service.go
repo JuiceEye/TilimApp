@@ -8,21 +8,45 @@ import (
 )
 
 type ProfileService struct {
-	repository *repository.ProfileRepository
+	userRepository         *repository.UserRepository
+	userProgressRepository *repository.UserProgressRepository
 }
 
-func NewProfileService(repository *repository.ProfileRepository) *ProfileService {
+func NewProfileService(
+	userRepository *repository.UserRepository,
+	userProgressRepository *repository.UserProgressRepository,
+) *ProfileService {
 	return &ProfileService{
-		repository: repository,
+		userRepository:         userRepository,
+		userProgressRepository: userProgressRepository,
 	}
 }
 
 func (s *ProfileService) GetProfile(userID int64) (profile *model.Profile, status int, err error) {
-	profile, err = s.repository.GetProfileByID(userID)
+	user, err := s.userRepository.GetUserByID(userID)
+
 	if errors.Is(err, repository.ErrNotFound) {
 		return nil, http.StatusNotFound, err
 	} else if err != nil {
 		return nil, http.StatusInternalServerError, err
+	}
+
+	userProgress, err := s.userProgressRepository.GetUserProgressByUserID(userID)
+
+	if errors.Is(err, repository.ErrNotFound) {
+		return nil, http.StatusNotFound, err
+	} else if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+
+	profile = &model.Profile{
+		UserID:           user.ID,
+		Username:         user.Username,
+		RegistrationDate: user.RegistrationDate,
+		StreakDays:       userProgress.StreakDays,
+		XPPoints:         userProgress.XPPoints,
+		WordsLearned:     userProgress.WordsLearned,
+		LessonsDone:      userProgress.LessonsDone,
 	}
 
 	return profile, http.StatusOK, nil
