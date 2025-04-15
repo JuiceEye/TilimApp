@@ -3,9 +3,9 @@ package request
 import (
 	"errors"
 	"fmt"
-	"regexp"
 	"strings"
 	"tilimauth/internal/utils"
+	"tilimauth/internal/validation"
 )
 
 type AuthRegistrationRequest struct {
@@ -33,10 +33,10 @@ func (req *AuthRegistrationRequest) ValidateRequest() (err error) {
 	if len(missingFields) > 0 {
 		return fmt.Errorf("missing required fields: [%s]", strings.Join(missingFields, ", "))
 	}
-	if !utils.EmailRegex.MatchString(req.Email) {
+	if !validation.EmailRegex.MatchString(req.Email) {
 		return errors.New("invalid email address")
 	}
-	if !utils.PhoneRegex.MatchString(req.PhoneNumber) {
+	if !validation.PhoneRegex.MatchString(req.PhoneNumber) {
 		return errors.New("invalid phone number")
 	}
 

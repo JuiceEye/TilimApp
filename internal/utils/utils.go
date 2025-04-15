@@ -6,13 +6,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"regexp"
 	"tilimauth/internal/dto/request"
 	"unicode"
 )
-
-var EmailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
-var PhoneRegex = regexp.MustCompile(`^\+?[1-9]\d{9,15}$`)
 
 func ParseRequestBody(r *http.Request, body any) error {
 	if r.ContentLength == 0 {
