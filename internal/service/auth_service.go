@@ -9,36 +9,46 @@ import (
 )
 
 type AuthService struct {
-	repository *repository.UserRepository
+	userRepository         *repository.UserRepository
+	userProgressRepository *repository.UserProgressRepository
 }
 
-func NewAuthService(repository *repository.UserRepository) *AuthService {
+func NewAuthService(
+	userRepository *repository.UserRepository,
+	userProgressRepository *repository.UserProgressRepository,
+) *AuthService {
 	return &AuthService{
-		repository: repository,
+		userRepository:         userRepository,
+		userProgressRepository: userProgressRepository,
 	}
 }
 
 func (s *AuthService) Register(user model.User) (createdUser *model.User, status int, err error) {
-	if _, err := s.repository.GetUserByEmail(user.Email); err == nil {
+	if _, err := s.userRepository.GetUserByEmail(user.Email); err == nil {
 		return nil, http.StatusBadRequest, fmt.Errorf("email already taken")
 	} else if !errors.Is(err, repository.ErrNotFound) {
 		return nil, http.StatusInternalServerError, err
 	}
 
-	if _, err = s.repository.GetUserByPhoneNumber(user.PhoneNumber); err == nil {
+	if _, err = s.userRepository.GetUserByPhoneNumber(user.PhoneNumber); err == nil {
 		return nil, http.StatusBadRequest, fmt.Errorf("phone number already taken")
 	} else if !errors.Is(err, repository.ErrNotFound) {
 		return nil, http.StatusInternalServerError, err
 	}
 
-	if _, err = s.repository.GetUserByUsername(user.Username); err == nil {
+	if _, err = s.userRepository.GetUserByUsername(user.Username); err == nil {
 		return nil, http.StatusBadRequest, fmt.Errorf("username already taken")
 	} else if !errors.Is(err, repository.ErrNotFound) {
 		return nil, http.StatusInternalServerError, err
 	}
 
 	// user.Password = Bcrypt(user.Password)
-	createdUser, err = s.repository.CreateUser(&user)
+	createdUser, err = s.userRepository.CreateUser(&user)
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+
+	_, err = s.userProgressRepository.CreateUserProgress(createdUser.ID)
 	if err != nil {
 		return nil, http.StatusInternalServerError, err
 	}
