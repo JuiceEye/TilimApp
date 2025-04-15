@@ -57,10 +57,6 @@ func (s *AuthService) Register(user model.User) (createdUser *model.User, status
 	return createdUser, http.StatusOK, nil
 }
 
-// func (s *AuthService) Login(username, password string) (string, error) {
-
-// }
-
 func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int, error) {
 	var user *model.User
 	var err error
