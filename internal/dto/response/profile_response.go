@@ -7,7 +7,7 @@ type ReadProfileResponse struct {
 	Username         string    `json:"username"`
 	RegistrationDate time.Time `json:"registration_date"`
 	StreakDays       int       `json:"streak_days"`
-	XPPoints         int       `json:"xp_points"`
+	XPPoints         int64     `json:"xp_points"`
 	WordsLearned     int       `json:"words_learned"`
 	LessonsDone      int       `json:"lessons_done"`
 }
