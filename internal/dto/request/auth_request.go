@@ -36,7 +36,7 @@ func (req *AuthRegistrationRequest) ValidateRequest() (err error) {
 	if !utils.EmailRegex.MatchString(req.Email) {
 		return errors.New("invalid email address")
 	}
-	if !utils.MatchString(req.PhoneNumber) {
+	if !utils.PhoneRegex.MatchString(req.PhoneNumber) {
 		return errors.New("invalid phone number")
 	}
 
