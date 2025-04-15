@@ -24,7 +24,7 @@ func NewServer(address string, db *sql.DB) *Server {
 func (s *Server) Run() error {
 	router := http.NewServeMux()
 
-	userRepo := repository.NewAuthRepo(s.db)
+	userRepo := repository.NewUserRepo(s.db)
 	userService := service.NewAuthService(userRepo)
 	userHandler := handler.NewAuthHandler(userService)
 	userHandler.RegisterRoutes(router)

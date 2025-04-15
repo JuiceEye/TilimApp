@@ -9,10 +9,10 @@ import (
 )
 
 type AuthService struct {
-	repository *repository.AuthRepository
+	repository *repository.UserRepository
 }
 
-func NewAuthService(repository *repository.AuthRepository) *AuthService {
+func NewAuthService(repository *repository.UserRepository) *AuthService {
 	return &AuthService{
 		repository: repository,
 	}
@@ -37,7 +37,7 @@ func (s *AuthService) Register(user model.User) (createdUser *model.User, status
 		return nil, http.StatusInternalServerError, err
 	}
 
-	//user.Password = Bcrypt(user.Password)
+	// user.Password = Bcrypt(user.Password)
 	createdUser, err = s.repository.CreateUser(&user)
 	if err != nil {
 		return nil, http.StatusInternalServerError, err
@@ -46,6 +46,6 @@ func (s *AuthService) Register(user model.User) (createdUser *model.User, status
 	return createdUser, http.StatusOK, nil
 }
 
-//func (s *AuthService) Login(username, password string) (string, error) {
+// func (s *AuthService) Login(username, password string) (string, error) {
 
-//}
+// }
