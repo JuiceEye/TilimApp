@@ -35,12 +35,6 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
-	// todo: зашифровать пароль для сравнения но хз где это делается тут или в сервисе
-	// err = utils.WriteJSONResponse(w, http.StatusOK, response)
-	// if err != nil {
-	// 	utils.WriteError(w, http.StatusInternalServerError, err)
-	// 	return
-	// }
 
 	user, status, err := h.service.Login(payload.Username, payload.Password)
 	if err != nil {
