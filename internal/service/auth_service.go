@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
+	"tilimauth/internal/utils"
 )
 
 type AuthService struct {
@@ -59,3 +61,32 @@ func (s *AuthService) Register(user model.User) (createdUser *model.User, status
 // func (s *AuthService) Login(username, password string) (string, error) {
 
 // }
+
+func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int, error) {
+	var user *model.User
+	var err error
+
+	if isEmail(usernameOrEmail) {
+		user, err = s.repository.GetUserByEmail(usernameOrEmail)
+	} else {
+		user, err = s.repository.GetUserByUsername(usernameOrEmail)
+	}
+
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return nil, http.StatusUnauthorized, fmt.Errorf("invalid credentials")
+		}
+		return nil, http.StatusInternalServerError, err
+	}
+
+	if err := utils.ComparePassword(user.HashedPassword, password); err != nil {
+		return nil, http.StatusUnauthorized, fmt.Errorf("invalid credentials")
+	}
+
+	return user, http.StatusOK, nil
+}
+
+func isEmail(input string) bool {
+	return strings.Contains(input, "@") && strings.Contains(input, ".") //чекаем есть ли собачка и точка - главные идентификаторы имейла
+
+}

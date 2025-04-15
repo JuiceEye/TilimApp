@@ -25,6 +25,7 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 func (h *AuthHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /register", h.handleRegister)
 	router.HandleFunc("POST /login", h.handleLogin)
+	router.HandleFunc("POST /refresh", h.handleRefreshToken) // это для обновления токенов эндпоинт
 }
 
 func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
@@ -39,10 +40,35 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	// 	utils.WriteError(w, http.StatusInternalServerError, err)
 	// 	return
 	// }
+
+	//user, status, err := h.service.Login(payload.Username, payload.Password)
+	//if err != nil {
+	//	utils.WriteError(w, status, err)
+	//	return
+	//}
+	//
+	//tokens, err := auth.GenerateTokenPair(w, userID)
+	//if err != nil {
+	//	utils.WriteError(w, http.StatusInternalServerError, err)
+	//	return
+	//}
+	//
+	//loginResponse := response.AuthLoginResponse{
+	//	UserID: userID,
+	//	Tokens: tokens,
+	//}
+	//
+	//// Отправляем ответ
+	//err = utils.WriteJSONResponse(w, http.StatusOK, loginResponse)
+	//if err != nil {
+	//	utils.WriteError(w, http.StatusInternalServerError, err)
+	//	return
+	//}
 }
 
 // todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
 func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
+
 	// todo: добавить валидацию для требований к паролю (спец. сиволы)
 	payload := request.AuthRegistrationRequest{}
 	if err := utils.ParseBodyAndValidate(r, &payload); err != nil {
@@ -66,7 +92,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := auth.GenerateJWT(w, createdUser.ID)
+	tokens, err := auth.GenerateTokenPair(w, createdUser.ID)
 	if err != nil {
 		utils.WriteError(w, http.StatusUnauthorized, err)
 		return
@@ -75,7 +101,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	// todo: узнать как правильно возвращать токены: точно ли просто в body...?
 	registerResponse := response.AuthRegistrationResponse{
 		UserID: createdUser.ID,
-		Token:  token,
+		Tokens: tokens,
 	}
 
 	err = utils.WriteJSONResponse(w, http.StatusOK, registerResponse)
@@ -86,7 +112,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) handleProtectedRoute(w http.ResponseWriter, r *http.Request) {
-	userID, err := auth.VerifyJWT(r)
+	createdUser, err := auth.VerifyTokens(r, "access")
 	if err != nil {
 		utils.WriteError(w, http.StatusUnauthorized, err)
 		return
@@ -94,10 +120,37 @@ func (h *AuthHandler) handleProtectedRoute(w http.ResponseWriter, r *http.Reques
 
 	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]string{
 		"message": "Access allowed",
-		"user_id": strconv.Itoa(userID),
+		"user_id": strconv.FormatInt(createdUser, 10),
 	})
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
+}
+
+// только для получения аксесс токена, поэтому не хендлим защищённый маршрут как для аксесса
+func (h *AuthHandler) handleRefreshToken(w http.ResponseWriter, r *http.Request) {
+	userID, err := auth.VerifyTokens(r, "refresh")
+	if err != nil {
+		utils.WriteError(w, http.StatusUnauthorized, err)
+		return
+	}
+
+	tokens, err := auth.GenerateTokenPair(w, userID)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	refreshResponse := response.AuthRegistrationResponse{
+		UserID: userID,
+		Tokens: tokens,
+	}
+
+	err = utils.WriteJSONResponse(w, http.StatusOK, refreshResponse)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
 }

@@ -6,13 +6,14 @@ import (
 )
 
 type Env struct {
-	DBUser           string
-	DBPassword       string
-	DBName           string
-	DBHost           string
-	DBPort           string
-	JWTSecret        string
-	JWTExpireSeconds int
+	DBUser                  string
+	DBPassword              string
+	DBName                  string
+	DBHost                  string
+	DBPort                  string
+	JWTSecret               string
+	JWTAccessExpireSeconds  int
+	JWTRefreshExpireSeconds int
 }
 
 var Envs = initEnv()
@@ -22,13 +23,14 @@ func initEnv() Env {
 
 	//todo: починить доставание из env
 	return Env{
-		DBUser:           getEnv("DB_USER", "postgres.nffhzpzmtuicxmipwlcz"),
-		DBPassword:       getEnv("DB_PASSWORD", "farukhnastya2003"),
-		DBName:           getEnv("DB_NAME", "auth"),
-		DBHost:           getEnv("DB_HOST", "aws-0-eu-central-1.pooler.supabase.com"),
-		DBPort:           getEnv("DB_PORT", "6543"),
-		JWTSecret:        getEnv("JWT_SECRET", "supersecretkey"),
-		JWTExpireSeconds: getEnvAsInt("JWT_EXPIRE_SECONDS", 3600*24*7), //7 дней
+		DBUser:                  getEnv("DB_USER", "postgres.nffhzpzmtuicxmipwlcz"),
+		DBPassword:              getEnv("DB_PASSWORD", "farukhnastya2003"),
+		DBName:                  getEnv("DB_NAME", "auth"),
+		DBHost:                  getEnv("DB_HOST", "aws-0-eu-central-1.pooler.supabase.com"),
+		DBPort:                  getEnv("DB_PORT", "6543"),
+		JWTSecret:               getEnv("JWT_SECRET", "supersecretkey"),
+		JWTAccessExpireSeconds:  getEnvAsInt("JWT_ACCESS_EXPIRE_SECONDS", 300),         // 5 минут аксесс токен
+		JWTRefreshExpireSeconds: getEnvAsInt("JWT_REFRESH_EXPIRE_SECONDS", 3600*24*30), // 30 дней рефреш токен
 	}
 }
 

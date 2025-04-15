@@ -7,23 +7,64 @@ import (
 	"strconv"
 	"strings"
 	"tilimauth/internal/config"
+	"tilimauth/internal/dto/response"
 	"tilimauth/internal/utils"
-
 	"time"
 )
 
-func GenerateJWT(w http.ResponseWriter, userID int64) (string, error) {
+func GenerateTokenPair(w http.ResponseWriter, userID int64) (*response.AccessRefreshTokenPair, error) {
+	accessToken, err := GenerateAccessToken(w, userID)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return nil, err
+	}
+
+	refreshToken, err := GenerateRefreshToken(w, userID)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return nil, err
+	}
+
+	return &response.AccessRefreshTokenPair{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	}, nil
+}
+
+// аксесс токен
+func GenerateAccessToken(resp http.ResponseWriter, userID int64) (string, error) {
 	secretKey := []byte(config.Envs.JWTSecret)
-	expiration := time.Second * time.Duration(config.Envs.JWTExpireSeconds)
+	expiration := time.Second * time.Duration(config.Envs.JWTAccessExpireSeconds)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"user_id":   strconv.FormatInt(userID, 10),
-		"expiredAt": time.Now().Add(expiration).Unix(),
+		"user_id":    strconv.FormatInt(userID, 10),
+		"expiredAt":  time.Now().Add(expiration).Unix(),
+		"token_type": "access",
 	})
 
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		utils.WriteError(resp, http.StatusInternalServerError, err)
+		return "", err
+	}
+
+	return tokenString, err
+}
+
+// рефреш токен
+func GenerateRefreshToken(resp http.ResponseWriter, userID int64) (string, error) {
+	secretKey := []byte(config.Envs.JWTSecret)
+	expiration := time.Second * time.Duration(config.Envs.JWTRefreshExpireSeconds)
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id":    strconv.FormatInt(userID, 10),
+		"expiredAt":  time.Now().Add(expiration).Unix(),
+		"token_type": "refresh",
+	})
+
+	tokenString, err := token.SignedString(secretKey)
+	if err != nil {
+		utils.WriteError(resp, http.StatusInternalServerError, err)
 		return "", err
 	}
 
@@ -31,18 +72,31 @@ func GenerateJWT(w http.ResponseWriter, userID int64) (string, error) {
 }
 
 // todo: add to the middleware layer later
-func VerifyJWT(r *http.Request) (int, error) {
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
-		return 0, fmt.Errorf("authorization header is required")
-	}
+func VerifyTokens(request *http.Request, tokenType string /*tokenString string*/) (int64, error) {
+	var tokenString string
 
-	parts := strings.Split(authHeader, " ")
-	if len(parts) != 2 || parts[0] != "Bearer" {
-		return 0, fmt.Errorf("invalid authorization header format")
-	}
+	if tokenType == "access" {
+		authHeader := request.Header.Get("Authorization")
+		if authHeader == "" {
+			return 0, fmt.Errorf("access token header is required")
+		}
 
-	tokenString := parts[1]
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			return 0, fmt.Errorf("invalid authorization header format")
+		}
+
+		tokenString = parts[1]
+	} else if tokenType == "refresh" {
+		refreshHeader := request.Header.Get("X-Refresh-Token")
+		if refreshHeader == "" {
+			return 0, fmt.Errorf("refresh token header is required")
+		}
+
+		tokenString = refreshHeader
+	} else {
+		return 0, fmt.Errorf("unknown token type")
+	}
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -59,14 +113,17 @@ func VerifyJWT(r *http.Request) (int, error) {
 		return 0, fmt.Errorf("invalid token")
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		userIDStr := claims["user_id"].(string)
-		userID, err := strconv.Atoi(userIDStr)
-		if err != nil {
-			return 0, fmt.Errorf("invalid user_id in token")
-		}
-		return userID, nil
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return 0, fmt.Errorf("invalid token claims")
 	}
 
-	return 0, fmt.Errorf("invalid token claims")
+	userIDStr := claims["user_id"].(string)
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		return 0, fmt.Errorf("invalid user_id in token")
+	}
+
+	return userID, nil
+
 }
