@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"tilimauth/internal/dto/request"
@@ -20,7 +21,7 @@ func NewProfileHandler(service *service.ProfileService) *ProfileHandler {
 }
 
 func (h *ProfileHandler) RegisterRoutes(router *http.ServeMux) {
-	router.HandleFunc("POST /profile/{id}", h.handleReadProfile)
+	router.HandleFunc("POST /profile/{user_id}", h.handleReadProfile)
 }
 
 func (h *ProfileHandler) handleReadProfile(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +63,7 @@ func (h *ProfileHandler) handleReadProfile(w http.ResponseWriter, r *http.Reques
 func parseReadProfilePathParams(r *http.Request, payload *request.ReadProfileRequest) error {
 	userID, err := strconv.ParseInt(r.PathValue("user_id"), 10, 64)
 	if err != nil {
-		return err
+		return errors.New("user_id path param not found")
 	}
 	payload.UserID = userID
 

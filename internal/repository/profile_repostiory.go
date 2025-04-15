@@ -43,10 +43,11 @@ func scanRowIntoProfiles(rows *sql.Rows) (*model.Profile, error) {
 	err := rows.Scan(
 		&profile.UserID,
 		&profile.Username,
-		&profile.RegistrationDate,
+		nil,
 		&profile.StreakDays,
 		&profile.XPPoints,
-		&profile.RegistrationDate,
+		&profile.WordsLearned,
+		&profile.LessonsDone,
 	)
 
 	if err != nil {
