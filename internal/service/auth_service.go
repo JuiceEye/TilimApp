@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
+	"tilimauth/internal/utils"
 	"tilimauth/internal/validation"
 )
 
@@ -74,9 +75,9 @@ func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int,
 		return nil, http.StatusInternalServerError, err
 	}
 
-	//if err := utils.ComparePassword(user.HashedPassword, password); err != nil {
-	//	return nil, http.StatusUnauthorized, fmt.Errorf("invalid credentials")
-	//}
+	if err := utils.ComparePassword(user.Password, password); err != nil {
+		return nil, http.StatusUnauthorized, fmt.Errorf("invalid credentials")
+	}
 
 	return user, http.StatusOK, nil
 }
