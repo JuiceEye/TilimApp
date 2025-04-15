@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"tilimauth/internal/dto/request"
@@ -59,4 +60,13 @@ func capitalizeFirst(s string) string {
 	r := []rune(s)
 	r[0] = unicode.ToUpper(r[0])
 	return string(r)
+}
+
+func HashPassword(password string) (string, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return string(bytes), err
+}
+
+func ComparePassword(hashedPassword, userPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(userPassword))
 }
