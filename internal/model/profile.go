@@ -7,7 +7,7 @@ type Profile struct {
 	Username         string
 	RegistrationDate time.Time
 	StreakDays       int
-	XPPoints         int
+	XPPoints         int64
 	WordsLearned     int
 	LessonsDone      int
 }
