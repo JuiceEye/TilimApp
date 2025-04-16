@@ -1,6 +1,8 @@
 package config
 
 import (
+	"github.com/joho/godotenv"
+	"log"
 	"os"
 	"strconv"
 )
@@ -19,13 +21,15 @@ type Env struct {
 var Envs = initEnv()
 
 func initEnv() Env {
-	//godotenv.Load() 	//загружает данные из .env
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("[ERROR] Could not load .env file: %v", err)
+	}
 
-	//todo: починить доставание из env
 	return Env{
 		DBUser:                  getEnv("DB_USER", "postgres.nffhzpzmtuicxmipwlcz"),
 		DBPassword:              getEnv("DB_PASSWORD", "farukhnastya2003"),
-		DBName:                  getEnv("DB_NAME", "auth"),
+		DBName:                  getEnv("DB_NAME", "tilim"),
 		DBHost:                  getEnv("DB_HOST", "aws-0-eu-central-1.pooler.supabase.com"),
 		DBPort:                  getEnv("DB_PORT", "6543"),
 		JWTSecret:               getEnv("JWT_SECRET", "supersecretkey"),
@@ -40,7 +44,6 @@ func getEnv(key, fallback string) string {
 	}
 
 	return fallback
-
 }
 
 func getEnvAsInt(key string, fallback int) int {
@@ -54,5 +57,4 @@ func getEnvAsInt(key string, fallback int) int {
 	}
 
 	return fallback
-
 }
