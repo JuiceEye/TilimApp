@@ -35,7 +35,8 @@ func (s *Server) Run() error {
 	profileHandler := handler.NewProfileHandler(profileService)
 	profileHandler.RegisterRoutes(router)
 
-	log.Printf("Starting server on %s...", s.address)
+	log.Printf("[INFO] Starting server on %s...", s.address)
+	log.Println("-----------------------------------------------------------------------------------------------")
 
 	return http.ListenAndServe(s.address, router)
 }
