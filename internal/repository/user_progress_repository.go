@@ -17,7 +17,7 @@ func NewUserProgressRepo(db *sql.DB) *UserProgressRepository {
 }
 
 func (r *UserProgressRepository) GetUserProgressByUserID(UserID int64) (*model.UserProgress, error) {
-	rows, err := r.db.Query("SELECT * FROM tilim.user_progress WHERE user_id = $1::INTEGER", UserID)
+	rows, err := r.db.Query("SELECT * FROM app.user_progress WHERE user_id = $1::INTEGER", UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +51,7 @@ func (r *UserProgressRepository) CreateUserProgress(UserID int64) (*model.UserPr
 	}
 
 	_, err := r.db.Exec(
-		`INSERT INTO tilim.user_progress
+		`INSERT INTO app.user_progress
 		(user_id, streak_days, xp_points, words_learned, lessons_done, last_lesson_completed_at, created_at, updated_at)
 		VALUES ($1::INTEGER, $2::INTEGER, $3::INTEGER, $4::INTEGER, $5::INTEGER, $6::TIMESTAMPTZ, $7::TIMESTAMPTZ, $8::TIMESTAMPTZ)`,
 		up.UserID, up.StreakDays, up.XPPoints, up.WordsLearned, up.LessonsDone, up.LastLessonCompletedAt, up.CreatedAt, up.UpdatedAt,
