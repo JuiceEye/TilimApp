@@ -27,7 +27,7 @@ func NewConfig(envs *config.Env) *Config {
 }
 
 func NewDBConnection(cfg *Config) (*sql.DB, error) {
-	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=disable",
+	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=require",
 		cfg.user, cfg.password, cfg.name, cfg.host, cfg.port)
 	db, err := sql.Open("postgres", dsn)
 
