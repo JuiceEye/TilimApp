@@ -75,7 +75,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 
 	hashedPassword, err := utils.HashPassword(payload.Password)
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("failed to hash password: %w", err))
+		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("не удалось захешировать пароль: %w", err))
 		return
 	}
 

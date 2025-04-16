@@ -70,7 +70,7 @@ func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int,
 
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, http.StatusUnauthorized, fmt.Errorf("invalid credentials")
+			return nil, http.StatusUnauthorized, fmt.Errorf("неверные учетные данные")
 		}
 		return nil, http.StatusInternalServerError, err
 	}
@@ -79,7 +79,7 @@ func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int,
 		fmt.Println("Ошибочка")
 		fmt.Println("Хеш из БД:", user.Password)
 		fmt.Println("Введённый пароль:", password)
-		return nil, http.StatusUnauthorized, fmt.Errorf("invalid credentials")
+		return nil, http.StatusUnauthorized, fmt.Errorf("неверные учетные данные")
 	}
 
 	return user, http.StatusOK, nil

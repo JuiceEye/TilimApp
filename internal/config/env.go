@@ -23,7 +23,7 @@ var Envs = initEnv()
 func initEnv() Env {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("[ERROR] Could not load .env file: %v", err)
+		log.Fatalf("[ERROR] Не удалось загрузить .env файл: %v", err)
 	}
 
 	return Env{
