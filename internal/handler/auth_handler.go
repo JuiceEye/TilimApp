@@ -29,6 +29,7 @@ func (h *AuthHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /refresh", h.handleRefreshToken) // это для обновления токенов эндпоинт
 }
 
+// работает
 func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var payload request.AuthLoginRequest
 	if err := utils.ParseBodyAndValidate(r, &payload); err != nil {
@@ -61,6 +62,7 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// работает
 // todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
 func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 
