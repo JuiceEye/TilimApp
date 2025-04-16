@@ -1,7 +1,6 @@
 package request
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"tilimauth/internal/validation"
@@ -33,10 +32,10 @@ func (req *AuthRegistrationRequest) ValidateRequest() (err error) {
 		return fmt.Errorf("missing required fields: [%s]", strings.Join(missingFields, ", "))
 	}
 	if !validation.EmailRegex.MatchString(req.Email) {
-		return errors.New("invalid email address")
+		return fmt.Errorf("invalid email address")
 	}
 	if !validation.PhoneRegex.MatchString(req.PhoneNumber) {
-		return errors.New("invalid phone number")
+		return fmt.Errorf("invalid phone number")
 	}
 
 	return nil

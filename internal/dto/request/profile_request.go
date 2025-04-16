@@ -10,7 +10,7 @@ type ReadProfileRequest struct {
 
 func (req *ReadProfileRequest) ValidateRequest() (err error) {
 	if req.UserID <= 0 {
-		return errors.New("user_id must be greater than zero")
+		return fmt.Errorf("user_id must be greater than zero")
 	}
 
 	return nil

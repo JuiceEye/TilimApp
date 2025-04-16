@@ -2,4 +2,4 @@ package repository
 
 import "errors"
 
-var ErrNotFound = errors.New("запись не найдена")
+var ErrNotFound = fmt.Errorf("запись не найдена")

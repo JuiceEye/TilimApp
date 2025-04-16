@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
@@ -26,7 +25,7 @@ func ParseRequestBody(r *http.Request, body any) error {
 
 func ParseBodyAndValidate(r *http.Request, req request.Request) error {
 	if err := ParseRequestBody(r, req); err != nil {
-		return errors.New("invalid JSON request")
+		return fmt.Errorf("invalid JSON request")
 	}
 
 	if err := req.ValidateRequest(); err != nil {
@@ -48,7 +47,7 @@ func WriteJSONResponse(w http.ResponseWriter, status int, payload any) error {
 func WriteError(w http.ResponseWriter, status int, err error) {
 	if status == 500 {
 		log.Printf("\n\n [ERROR] %s \n\n", err.Error())
-		err = errors.New("что-то пошло не так")
+		err = fmt.Errorf("что-то пошло не так")
 	}
 	_ = WriteJSONResponse(w, status, map[string]string{"error": capitalizeFirst(err.Error())})
 }
