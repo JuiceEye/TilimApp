@@ -62,8 +62,11 @@ func capitalizeFirst(s string) string {
 }
 
 func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
-	return string(bytes), err
+	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", fmt.Errorf("не удалось захешировать пароль: %w", err)
+	}
+	return string(hashedBytes), nil
 }
 
 func ComparePassword(hashedPassword, userPassword string) error {
