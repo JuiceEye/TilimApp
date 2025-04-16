@@ -86,6 +86,8 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		RegistrationDate: time.Now(),
 	}
 
+	fmt.Println("Оригинальный пароль:", payload.Password)
+	fmt.Println("Захешированный пароль:", hashedPassword)
 	createdUser, status, err := h.service.Register(user)
 	if err != nil {
 		utils.WriteError(w, status, err)

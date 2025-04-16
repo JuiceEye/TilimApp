@@ -76,6 +76,9 @@ func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int,
 	}
 
 	if err := utils.ComparePassword(user.Password, password); err != nil {
+		fmt.Println("Ошибочка")
+		fmt.Println("Хеш из БД:", user.Password)
+		fmt.Println("Введённый пароль:", password)
 		return nil, http.StatusUnauthorized, fmt.Errorf("invalid credentials")
 	}
 
