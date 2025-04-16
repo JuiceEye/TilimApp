@@ -1,7 +1,7 @@
 package request
 
 import (
-	"errors"
+	"fmt"
 )
 
 type ReadProfileRequest struct {

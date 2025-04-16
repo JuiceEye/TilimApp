@@ -2,7 +2,7 @@ package utils
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
