@@ -12,7 +12,7 @@ import (
 
 func ParseRequestBody(r *http.Request, body any) error {
 	if r.ContentLength == 0 {
-		return fmt.Errorf("missing body")
+		return nil
 	}
 
 	err := json.NewDecoder(r.Body).Decode(body)
