@@ -25,7 +25,7 @@ func ParseRequestBody(r *http.Request, body any) error {
 
 func ParseBodyAndValidate(r *http.Request, req request.Request) error {
 	if err := ParseRequestBody(r, req); err != nil {
-		return fmt.Errorf("invalid JSON request")
+		return fmt.Errorf("ошибка при парсинге JSON тела")
 	}
 
 	if err := req.ValidateRequest(); err != nil {

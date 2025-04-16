@@ -63,7 +63,7 @@ func (h *ProfileHandler) handleReadProfile(w http.ResponseWriter, r *http.Reques
 func parseReadProfilePathParams(r *http.Request, payload *request.ReadProfileRequest) error {
 	userID, err := strconv.ParseInt(r.PathValue("user_id"), 10, 64)
 	if err != nil {
-		return fmt.Errorf("user_id path param not found")
+		return fmt.Errorf("user_id path param не найден")
 	}
 	payload.UserID = userID
 

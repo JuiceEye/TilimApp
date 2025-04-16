@@ -17,25 +17,25 @@ type AuthRegistrationRequest struct {
 func (req *AuthRegistrationRequest) ValidateRequest() (err error) {
 	var missingFields []string
 	if req.Username == "" {
-		missingFields = append(missingFields, "username")
+		missingFields = append(missingFields, "имя пользователя")
 	}
 	if req.Password == "" {
-		missingFields = append(missingFields, "password")
+		missingFields = append(missingFields, "пароль")
 	}
 	if req.Email == "" {
-		missingFields = append(missingFields, "email")
+		missingFields = append(missingFields, "электронная почта")
 	}
 	if req.PhoneNumber == "" {
-		missingFields = append(missingFields, "phone_number")
+		missingFields = append(missingFields, "номер телефона")
 	}
 	if len(missingFields) > 0 {
-		return fmt.Errorf("missing required fields: [%s]", strings.Join(missingFields, ", "))
+		return fmt.Errorf("отсутствуют обязательные параметры: [%s]", strings.Join(missingFields, ", "))
 	}
 	if !validation.EmailRegex.MatchString(req.Email) {
-		return fmt.Errorf("invalid email address")
+		return fmt.Errorf("неверный формат электронной почты")
 	}
 	if !validation.PhoneRegex.MatchString(req.PhoneNumber) {
-		return fmt.Errorf("invalid phone number")
+		return fmt.Errorf("неверный формат номера телефона")
 	}
 
 	return nil
@@ -49,13 +49,13 @@ type AuthLoginRequest struct {
 func (req *AuthLoginRequest) ValidateRequest() (err error) {
 	var missingFields []string
 	if req.Username == "" {
-		missingFields = append(missingFields, "username")
+		missingFields = append(missingFields, "имя пользователя")
 	}
 	if req.Password == "" {
-		missingFields = append(missingFields, "password")
+		missingFields = append(missingFields, "пароль")
 	}
 	if len(missingFields) > 0 {
-		return fmt.Errorf("missing required fields: [%s]", strings.Join(missingFields, ", "))
+		return fmt.Errorf("отсутствуют обязательные параметры: [%s]", strings.Join(missingFields, ", "))
 	}
 
 	return nil
