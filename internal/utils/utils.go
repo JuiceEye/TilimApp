@@ -17,16 +17,17 @@ func ParseRequestBody(r *http.Request, body any) error {
 
 	err := json.NewDecoder(r.Body).Decode(body)
 
-	jsonBody, _ := json.MarshalIndent(body, "", "  ")
-	log.Printf("[INFO] Parsing request %v", string(jsonBody))
-
 	return err
 }
 
 func ParseBodyAndValidate(r *http.Request, req request.Request) error {
+	log.Printf("[INFO] Parsing request %v", r.RequestURI)
 	if err := ParseRequestBody(r, req); err != nil {
 		return fmt.Errorf("ошибка при парсинге JSON тела")
 	}
+
+	jsonBody, _ := json.MarshalIndent(req, "", "  ")
+	fmt.Println(string(jsonBody))
 
 	if err := req.ValidateRequest(); err != nil {
 		return err
