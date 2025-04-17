@@ -2,11 +2,17 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"tilimauth/internal/model"
 )
 
 type UserRepository struct {
 	db *sql.DB
+}
+
+type UserCredentials struct {
+	ID             int64
+	HashedPassword string
 }
 
 func NewUserRepo(db *sql.DB) *UserRepository {
@@ -141,4 +147,28 @@ func scanRowIntoUsers(rows *sql.Rows) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+func (r *UserRepository) getCredentials(field, value string) (*UserCredentials, error) {
+	query := fmt.Sprintf(
+		"SELECT id, password FROM auth.users WHERE %s = $1", field,
+	)
+	row := r.db.QueryRow(query, value)
+
+	credentials := new(UserCredentials)
+	if err := row.Scan(&credentials.ID, &credentials.HashedPassword); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrNotFound
+		}
+		return nil, err
+	}
+	return credentials, nil
+}
+
+func (r *UserRepository) GetCredentialsByUsername(username string) (*UserCredentials, error) {
+	return r.getCredentials("username", username)
+}
+
+func (r *UserRepository) GetCredentialsByEmail(email string) (*UserCredentials, error) {
+	return r.getCredentials("email", email)
 }
