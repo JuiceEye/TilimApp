@@ -131,7 +131,6 @@ func scanRowIntoUsers(rows *sql.Rows) (*model.User, error) {
 	err := rows.Scan(
 		&user.ID,
 		&user.Username,
-		&user.Password,
 		&user.Email,
 		&user.PhoneNumber,
 		&user.RegistrationDate,
