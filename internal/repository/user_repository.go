@@ -38,7 +38,7 @@ func (r *UserRepository) GetUserByID(UserID int64) (*model.User, error) {
 }
 
 func (r *UserRepository) GetUserByEmail(email string) (*model.User, error) {
-	rows, err := r.db.Query("SELECT id, username, password, email, phone_number, registration_date FROM auth.users WHERE email = $1::TEXT", email)
+	rows, err := r.db.Query("SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE email = $1::TEXT", email)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (r *UserRepository) GetUserByPhoneNumber(phoneNumber string) (*model.User, 
 
 func (r *UserRepository) GetUserByUsername(username string) (*model.User, error) {
 	rows, err := r.db.Query(
-		"SELECT id, username, password, email, phone_number, registration_date FROM auth.users WHERE username = $1::TEXT",
+		"SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE username = $1::TEXT",
 		username,
 	)
 	if err != nil {
