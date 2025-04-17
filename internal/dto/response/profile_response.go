@@ -2,7 +2,7 @@ package response
 
 import "time"
 
-type ReadProfileResponse struct {
+type GetProfileResponse struct {
 	UserID           int64     `json:"user_id"`
 	Username         string    `json:"username"`
 	RegistrationDate time.Time `json:"registration_date"`

@@ -4,11 +4,11 @@ import (
 	"fmt"
 )
 
-type ReadProfileRequest struct {
+type GetProfileRequest struct {
 	UserID int64 `json:"user_id"`
 }
 
-func (req *ReadProfileRequest) ValidateRequest() (err error) {
+func (req *GetProfileRequest) ValidateRequest() (err error) {
 	if req.UserID <= 0 {
 		return fmt.Errorf("user_id не может быть меньше 1")
 	}

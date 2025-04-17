@@ -25,7 +25,7 @@ func (h *ProfileHandler) RegisterRoutes(router *http.ServeMux) {
 }
 
 func (h *ProfileHandler) handleReadProfile(w http.ResponseWriter, r *http.Request) {
-	payload := request.ReadProfileRequest{}
+	payload := request.GetProfileRequest{}
 
 	if err := parseReadProfilePathParams(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
@@ -43,7 +43,7 @@ func (h *ProfileHandler) handleReadProfile(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	profileResponse := response.ReadProfileResponse{
+	profileResponse := response.GetProfileResponse{
 		UserID:           profile.UserID,
 		Username:         profile.Username,
 		RegistrationDate: profile.RegistrationDate,
@@ -60,7 +60,7 @@ func (h *ProfileHandler) handleReadProfile(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func parseReadProfilePathParams(r *http.Request, payload *request.ReadProfileRequest) error {
+func parseReadProfilePathParams(r *http.Request, payload *request.GetProfileRequest) error {
 	userID, err := strconv.ParseInt(r.PathValue("user_id"), 10, 64)
 	if err != nil {
 		return fmt.Errorf("user_id path param не найден")
