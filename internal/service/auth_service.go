@@ -59,13 +59,13 @@ func (s *AuthService) Register(user model.User) (createdUser *model.User, status
 }
 
 func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int, error) {
-	var user *model.User
+	var credentials *repository.UserCredentials
 	var err error
 
 	if validation.EmailRegex.MatchString(usernameOrEmail) {
-		user, err = s.userRepository.GetUserByEmail(usernameOrEmail)
+		credentials, err = s.userRepository.GetCredentialsByEmail(usernameOrEmail)
 	} else {
-		user, err = s.userRepository.GetUserByUsername(usernameOrEmail)
+		credentials, err = s.userRepository.GetCredentialsByUsername(usernameOrEmail)
 	}
 
 	if err != nil {
@@ -75,8 +75,13 @@ func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int,
 		return nil, http.StatusInternalServerError, err
 	}
 
-	if err := utils.ComparePassword(user.Password, password); err != nil {
+	if err := utils.ComparePassword(credentials.HashedPassword, password); err != nil {
 		return nil, http.StatusUnauthorized, fmt.Errorf("неверные учетные данные")
+	}
+
+	user, err := s.userRepository.GetUserByID(credentials.ID)
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
 	}
 
 	return user, http.StatusOK, nil
