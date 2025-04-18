@@ -21,10 +21,10 @@ func NewProfileHandler(service *service.ProfileService) *ProfileHandler {
 }
 
 func (h *ProfileHandler) RegisterRoutes(router *http.ServeMux) {
-	router.HandleFunc("GET /profile/{user_id}", h.handleReadProfile)
+	router.HandleFunc("GET /profile/{user_id}", h.getProfile)
 }
 
-func (h *ProfileHandler) handleReadProfile(w http.ResponseWriter, r *http.Request) {
+func (h *ProfileHandler) getProfile(w http.ResponseWriter, r *http.Request) {
 	payload := &request.GetProfileRequest{}
 
 	userID, err := strconv.ParseInt(r.PathValue("user_id"), 10, 64)
