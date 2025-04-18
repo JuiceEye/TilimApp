@@ -25,8 +25,8 @@ func NewAuthHandler(service *service.AuthService) *AuthHandler {
 
 func (h *AuthHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /register", h.handleRegister)
-	router.HandleFunc("POST /login", h.login)
-	router.HandleFunc("POST /refresh", h.refreshToken) // это для обновления токенов эндпоинт
+	router.HandleFunc("POST /login", h.handleLogin)
+	router.HandleFunc("POST /refresh", h.handleRefreshToken) // это для обновления токенов эндпоинт
 }
 
 // todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
@@ -78,7 +78,7 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *AuthHandler) login(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 	var payload request.AuthLoginRequest
 	if err := utils.ParseBodyAndValidate(r, &payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
@@ -128,7 +128,7 @@ func (h *AuthHandler) handleProtectedRoute(w http.ResponseWriter, r *http.Reques
 }
 
 // только для получения аксесс токена, поэтому не хендлим защищённый маршрут как для аксесса
-func (h *AuthHandler) refreshToken(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) handleRefreshToken(w http.ResponseWriter, r *http.Request) {
 	userID, err := auth.VerifyTokens(r, "refresh")
 	if err != nil {
 		utils.WriteError(w, http.StatusUnauthorized, err)
