@@ -15,7 +15,7 @@ type ModuleHandler struct {
 	service *service.MainPageModuleService
 }
 
-func NewModuleHandler(service *service.MainPageModuleService) *ModuleHandler {
+func NewMainPageModuleHandler(service *service.MainPageModuleService) *ModuleHandler {
 	return &ModuleHandler{
 		service: service,
 	}
