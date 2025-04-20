@@ -10,7 +10,7 @@ type SectionRepository struct {
 	db *sql.DB
 }
 
-func NewSectionRepository(db *sql.DB) *SectionRepository {
+func NewSectionRepo(db *sql.DB) *SectionRepository {
 	return &SectionRepository{db: db}
 }
 

@@ -11,7 +11,7 @@ type LessonRepository struct {
 	db *sql.DB
 }
 
-func NewLessonRepository(db *sql.DB) *LessonRepository {
+func NewLessonRepo(db *sql.DB) *LessonRepository {
 	return &LessonRepository{db: db}
 }
 
