@@ -35,6 +35,13 @@ func (s *Server) Run() error {
 	profileHandler := handler.NewProfileHandler(profileService)
 	profileHandler.RegisterRoutes(router)
 
+	moduleRepo := repository.NewModuleRepo(s.db)
+	sectionRepo := repository.NewSectionRepo(s.db)
+	lessonRepo := repository.NewLessonRepo(s.db)
+	moduleMainPageService := service.NewMainPageModuleService(moduleRepo, sectionRepo, lessonRepo)
+	moduleMainPageHandler := handler.NewMainPageModuleHandler(moduleMainPageService)
+	moduleMainPageHandler.RegisterRoutes(router)
+
 	log.Printf("[INFO] Starting server on %s...", s.address)
 	log.Println("-----------------------------------------------------------------------------------------------")
 
