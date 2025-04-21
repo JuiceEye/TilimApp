@@ -2,8 +2,10 @@ package api
 
 import (
 	"database/sql"
+	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 	"tilimauth/internal/handler"
 	"tilimauth/internal/repository"
 	"tilimauth/internal/service"
@@ -42,8 +44,34 @@ func (s *Server) Run() error {
 	moduleMainPageHandler := handler.NewMainPageModuleHandler(moduleMainPageService)
 	moduleMainPageHandler.RegisterRoutes(router)
 
+	deleteUserDlyaFrontov(router, s.db)
+
 	log.Printf("[INFO] Starting server on %s...", s.address)
 	log.Println("-----------------------------------------------------------------------------------------------")
 
 	return http.ListenAndServe(s.address, router)
+}
+
+func deleteUserDlyaFrontov(router *http.ServeMux, db *sql.DB) {
+	router.HandleFunc("DELETE /user/{user_id}", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		id, _ := strconv.Atoi(r.PathValue("user_id"))
+		query := `DELETE FROM auth.users WHERE id = $1 RETURNING id`
+		var deletedUserID int
+		err := db.QueryRow(query, id).Scan(&deletedUserID)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			err := json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+			if err != nil {
+				return
+			}
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		err = json.NewEncoder(w).Encode(map[string]int{"user_id": deletedUserID})
+		if err != nil {
+			return
+		}
+	})
 }
