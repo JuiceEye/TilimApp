@@ -21,13 +21,13 @@ func ParseRequestBody(r *http.Request, body any) error {
 }
 
 func ParseBodyAndValidate(r *http.Request, req request.Request) error {
-	log.Printf("[INFO] Parsing request %v", r.RequestURI)
+	// log.Printf("[INFO] Parsing request %v", r.RequestURI)
 	if err := ParseRequestBody(r, req); err != nil {
 		return fmt.Errorf("ошибка при парсинге JSON тела")
 	}
 
-	jsonBody, _ := json.MarshalIndent(req, "", "  ")
-	fmt.Println(string(jsonBody))
+	// jsonBody, _ := json.MarshalIndent(req, "", "  ")
+	// fmt.Println(string(jsonBody))
 
 	if err := req.ValidateRequest(); err != nil {
 		return err
@@ -39,9 +39,9 @@ func ParseBodyAndValidate(r *http.Request, req request.Request) error {
 func WriteJSONResponse(w http.ResponseWriter, status int, payload any) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	jsonPayload, _ := json.MarshalIndent(payload, "", "  ")
-	log.Printf("[INFO] Response: %v \n", string(jsonPayload))
-	log.Println("-----------------------------------------------------------------------------------------------")
+	// jsonPayload, _ := json.MarshalIndent(payload, "", "  ")
+	// log.Printf("[INFO] Response: %v \n", string(jsonPayload))
+	// log.Println("-----------------------------------------------------------------------------------------------")
 	return json.NewEncoder(w).Encode(payload)
 }
 
