@@ -33,8 +33,8 @@ func initEnv() Env {
 		DBHost:                  getEnv("DB_HOST", ""),
 		DBPort:                  getEnv("DB_PORT", ""),
 		JWTSecret:               getEnv("JWT_SECRET", ""),
-		JWTAccessExpireSeconds:  getEnvAsInt("JWT_ACCESS_EXPIRE_SECONDS", 300),         // 5 минут аксесс токен
-		JWTRefreshExpireSeconds: getEnvAsInt("JWT_REFRESH_EXPIRE_SECONDS", 3600*24*30), // 30 дней рефреш токен
+		JWTAccessExpireSeconds:  getEnvAsInt("JWT_ACCESS_EXPIRE_SECONDS" /*300*/, 3600*24*30), // 30 дней пока что, вернуть потом 5 минут аксесс токен
+		JWTRefreshExpireSeconds: getEnvAsInt("JWT_REFRESH_EXPIRE_SECONDS", 3600*24*30),        // 30 дней рефреш токен
 	}
 }
 
