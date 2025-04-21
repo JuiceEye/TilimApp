@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"tilimauth/internal/handler"
+	"tilimauth/internal/middleware"
 	"tilimauth/internal/repository"
 	"tilimauth/internal/service"
 )
@@ -49,11 +50,16 @@ func (s *Server) Run() error {
 	log.Printf("[INFO] Starting server on %s...", s.address)
 	log.Println("-----------------------------------------------------------------------------------------------")
 
-	return http.ListenAndServe(s.address, router)
+	standardChain := middleware.CreateChain(
+		middleware.Logging,
+		middleware.SetCorsPolicy,
+	)
+	return http.ListenAndServe(s.address, standardChain(router))
 }
 
+// delete later
 func deleteUserDlyaFrontov(router *http.ServeMux, db *sql.DB) {
-	router.HandleFunc("DELETE /user/{user_id}", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("DELETE /users/{user_id}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		id, _ := strconv.Atoi(r.PathValue("user_id"))
 		query := `DELETE FROM auth.users WHERE id = $1 RETURNING id`
