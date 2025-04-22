@@ -44,10 +44,10 @@ func (h *ModuleHandler) handleGetMainPageModule(w http.ResponseWriter, r *http.R
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			utils.WriteError(w, http.StatusNotFound, err)
-			return
 		} else {
 			utils.WriteError(w, http.StatusInternalServerError, err)
 		}
+		return
 	}
 
 	err = utils.WriteJSONResponse(w, http.StatusOK, module)
