@@ -53,7 +53,7 @@ func (s *MainPageModuleService) GetMainPageModuleByID(ModuleID int64) (*model.Mo
 	for i := range sections {
 		sections[i].Lessons = lessonsBySection[sections[i].ID]
 		if sections[i].Lessons == nil {
-			sections[i].Lessons = []model.Lesson{} // Ensure empty array rather than nil
+			sections[i].Lessons = []model.Lesson{}
 		}
 	}
 
