@@ -45,6 +45,12 @@ func (s *Server) Run() error {
 	moduleMainPageHandler := handler.NewMainPageModuleHandler(moduleMainPageService)
 	moduleMainPageHandler.RegisterRoutes(router)
 
+	answerRepo := repository.NewAnswerRepo(s.db)
+	exerciseRepo := repository.NewExerciseRepo(s.db)
+	lessonService := service.NewLessonService(lessonRepo, exerciseRepo, answerRepo)
+	lessonHandler := handler.NewLessonHandler(lessonService)
+	lessonHandler.RegisterRoutes(router)
+
 	deleteUserDlyaFrontov(router, s.db)
 
 	log.Printf("[INFO] Starting server on %s...", s.address)
