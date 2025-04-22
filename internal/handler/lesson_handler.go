@@ -6,14 +6,13 @@ import (
 	"net/http"
 	"strconv"
 	"tilimauth/internal/dto/request"
-	"tilimauth/internal/dto/response"
 	"tilimauth/internal/repository"
 	"tilimauth/internal/service"
 	"tilimauth/internal/utils"
 )
 
 type LessonHandler struct {
-	service *service.ProfileService
+	service *service.LessonService
 }
 
 func NewLessonHandler(service *service.LessonService) *LessonHandler {
@@ -23,10 +22,10 @@ func NewLessonHandler(service *service.LessonService) *LessonHandler {
 }
 
 func (h *LessonHandler) RegisterRoutes(router *http.ServeMux) {
-	router.HandleFunc("GET /profile/{user_id}", h.handleGetLesson)
+	router.HandleFunc("GET /lessons/{lesson_id}", h.handleGetLesson)
 }
 
-func (h *ProfileHandler) handleGetLesson(w http.ResponseWriter, r *http.Request) {
+func (h *LessonHandler) handleGetLesson(w http.ResponseWriter, r *http.Request) {
 	payload := &request.GetLessonRequest{}
 	lessonIDPath := "lesson_id"
 	lessonID, err := strconv.ParseInt(r.PathValue(lessonIDPath), 10, 64)
@@ -34,21 +33,21 @@ func (h *ProfileHandler) handleGetLesson(w http.ResponseWriter, r *http.Request)
 		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("%s path param не найден", lessonIDPath))
 		return
 	}
-	payload.lessonID = lessonID
+	payload.LessonID = lessonID
 
 	if err := utils.ParseBodyAndValidate(r, payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
 
-	lesson, status, err := h.service.GetLessonByID(payload.lessonID)
+	lesson, err := h.service.GetLessonByID(payload.LessonID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			utils.WriteError(w, http.StatusNotFound, err)
-			return
 		} else {
 			utils.WriteError(w, http.StatusInternalServerError, err)
 		}
+		return
 	}
 
 	err = utils.WriteJSONResponse(w, http.StatusOK, lesson)
