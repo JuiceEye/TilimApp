@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"errors"
 	"fmt"
 	"tilimauth/internal/model"
 )
@@ -15,21 +14,31 @@ func NewExerciseRepo(db *sql.DB) *ExerciseRepository {
 	return &ExerciseRepository{db: db}
 }
 
-func (r *ExerciseRepository) GetByLessonID(lessonID int64) (*model.Exercise, error) {
+func (r *ExerciseRepository) GetByLessonID(lessonID int64) ([]model.Exercise, error) {
 	query := `
 		SELECT id, text, image, question_text
 		FROM app.exercises
 		WHERE lesson_id = $1
 	`
 
-	var exercise model.Exercise
-	err := r.db.QueryRow(query, lessonID).Scan(&exercise.ID, &exercise.Text, &exercise.Image, &exercise.QuestionText)
+	rows, err := r.db.Query(query, lessonID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, ErrNotFound
+		return nil, fmt.Errorf("error fetching exercises: %w", err)
+	}
+	defer rows.Close()
+
+	var exercises []model.Exercise
+	for rows.Next() {
+		var exercise model.Exercise
+		if err := rows.Scan(&exercise.ID, &exercise.Text, &exercise.Image, &exercise.QuestionText); err != nil {
+			return nil, fmt.Errorf("error scanning section row: %w", err)
 		}
-		return nil, fmt.Errorf("error fetching exercise: %w", err)
+		exercises = append(exercises, exercise)
 	}
 
-	return &exercise, nil
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating exercise rows: %w", err)
+	}
+
+	return exercises, nil
 }
