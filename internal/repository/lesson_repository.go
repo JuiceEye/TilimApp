@@ -60,7 +60,7 @@ func (r *LessonRepository) GetByID(id int64) (*model.Lesson, error) {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNotFound
 		}
-		return nil, fmt.Errorf("error fetching module: %w", err)
+		return nil, fmt.Errorf("error fetching lesson: %w", err)
 	}
 
 	return &lesson, nil
