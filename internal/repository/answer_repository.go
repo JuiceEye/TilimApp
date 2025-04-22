@@ -17,7 +17,7 @@ func NewAnswerRepo(db *sql.DB) *AnswerRepository {
 
 func (r *AnswerRepository) GetByExerciseIDs(exerciseIDs []int64) (map[int64][]model.Answer, error) {
 	query := `
-		SELECT id, text, image, is_correct, exercise_id
+		SELECT id, text, COALESCE(image, ''), is_correct, exercise_id
 		FROM app.answers
 		WHERE exercise_id = ANY($1)
 		ORDER BY id

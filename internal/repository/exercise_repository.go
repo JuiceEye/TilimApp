@@ -16,7 +16,7 @@ func NewExerciseRepo(db *sql.DB) *ExerciseRepository {
 
 func (r *ExerciseRepository) GetByLessonID(lessonID int64) ([]model.Exercise, error) {
 	query := `
-		SELECT id, text, image, question_text
+		SELECT id, COALESCE(text, ''), COALESCE(image, ''), question_text
 		FROM app.exercises
 		WHERE lesson_id = $1
 	`
