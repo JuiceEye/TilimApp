@@ -1,8 +1,8 @@
 package model
 
 type Lesson struct {
-	ID        int64       `json:"id"`
-	Title     string      `json:"title"`
-	XP        int64       `json:"xp"`
-	Exercises []Exercises `json:"exercises"`
+	ID        int64      `json:"id"`
+	Title     string     `json:"title"`
+	XP        int64      `json:"xp"`
+	Exercises []Exercise `json:"exercises"`
 }
