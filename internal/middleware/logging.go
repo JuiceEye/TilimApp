@@ -80,7 +80,7 @@ func Logging(next http.Handler) http.Handler {
 		}
 
 		next.ServeHTTP(rw, r)
-		duration := time.Since(start)
+		duration := time.Since(start).Round(time.Millisecond)
 
 		details := LoggingDetails{
 			Method:         r.Method,
@@ -100,25 +100,20 @@ func Logging(next http.Handler) http.Handler {
 		go func(details LoggingDetails) {
 			defer wg.Done()
 
-			log.Printf("[INFO] %s %s %s %s", details.Method, details.URI, details.Proto, details.Duration)
+			log.Printf("[INFO] %s %s %s %s", details.Duration, details.Method, details.URI, details.Proto)
 			log.Println("Query Params:", details.QueryParams)
 
 			if len(details.RequestBody) > 0 {
-				contentType := details.RequestHeader.Get("Content-Type")
-				if contentType == "application/json" || bytes.HasPrefix(details.RequestBody, []byte("{")) || bytes.HasPrefix(details.RequestBody, []byte("[")) {
-					log.Println("Request Body (JSON):")
-					log.Println(PrettyPrintJSON(details.RequestBody))
-				} else {
-					log.Println("Request Body:", string(details.RequestBody))
-				}
+				log.Println("Request Body (JSON):")
+				log.Println(PrettyPrintJSON(details.RequestBody))
 			}
 
 			if len(details.ResponseBody) > 0 {
 				contentType := details.ResponseHeader.Get("Content-Type")
 
 				if contentType == "application/json" || bytes.HasPrefix(details.ResponseBody, []byte("{")) || bytes.HasPrefix(details.ResponseBody, []byte("[")) {
-					if len(details.ResponseBody) > 10000 {
-						truncated := details.ResponseBody[:10000]
+					if len(details.ResponseBody) > 1000 {
+						truncated := details.ResponseBody[:1000]
 						log.Printf("%d Response Body (JSON):", details.StatusCode)
 						log.Println(PrettyPrintJSON(truncated) + "\n... (truncated)")
 					} else {
