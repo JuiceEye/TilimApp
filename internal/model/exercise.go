@@ -5,5 +5,5 @@ type Exercise struct {
 	Text         string   `json:"text"`
 	Image        string   `json:"image"`
 	QuestionText string   `json:"question_text"`
-	Answers      []Answer `json:"exercises"`
+	Answers      []Answer `json:"answers"`
 }
