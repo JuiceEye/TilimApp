@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/lib/pq"
 	"tilimauth/internal/model"
@@ -44,4 +45,23 @@ func (r *LessonRepository) GetBySectionIDs(sectionIDs []int64) (map[int64][]mode
 	}
 
 	return lessonsBySection, nil
+}
+
+func (r *LessonRepository) GetByID(id int64) (*model.Lesson, error) {
+	query := `
+		SELECT id, title, xp
+		FROM app.lessons
+		WHERE id = $1
+	`
+
+	var lesson model.Lesson
+	err := r.db.QueryRow(query, id).Scan(&lesson.ID, &lesson.Title, &lesson.XP)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNotFound
+		}
+		return nil, fmt.Errorf("error fetching module: %w", err)
+	}
+
+	return &lesson, nil
 }
