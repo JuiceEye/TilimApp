@@ -3,6 +3,7 @@ package middleware
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -101,24 +102,27 @@ func Logging(next http.Handler) http.Handler {
 			defer wg.Done()
 
 			log.Printf("[INFO] %s %s %s %s", details.Duration, details.Method, details.URI, details.Proto)
-			log.Println("Query Params:", details.QueryParams)
+			if len(details.QueryParams) > 0 {
+				log.Println("Query Params:", details.QueryParams)
+
+			}
 
 			if len(details.RequestBody) > 0 {
-				log.Println("Request Body (JSON):")
-				log.Println(PrettyPrintJSON(details.RequestBody))
+				log.Println("Request:")
+				fmt.Println(PrettyPrintJSON(details.RequestBody))
 			}
 
 			if len(details.ResponseBody) > 0 {
 				contentType := details.ResponseHeader.Get("Content-Type")
-
+				fmt.Println()
 				if contentType == "application/json" || bytes.HasPrefix(details.ResponseBody, []byte("{")) || bytes.HasPrefix(details.ResponseBody, []byte("[")) {
 					if len(details.ResponseBody) > 1000 {
 						truncated := details.ResponseBody[:1000]
-						log.Printf("%d Response Body (JSON):", details.StatusCode)
-						log.Println(PrettyPrintJSON(truncated) + "\n... (truncated)")
+						log.Printf("[%d] Response:", details.StatusCode)
+						fmt.Println(PrettyPrintJSON(truncated) + "\n... (truncated)")
 					} else {
-						log.Printf("%d Response Body (JSON):", details.StatusCode)
-						log.Println(PrettyPrintJSON(details.ResponseBody))
+						log.Printf("[%d] Response:", details.StatusCode)
+						fmt.Println(PrettyPrintJSON(details.ResponseBody))
 					}
 				} else {
 					responseBodyStr := string(details.ResponseBody)
@@ -129,7 +133,7 @@ func Logging(next http.Handler) http.Handler {
 				}
 			}
 
-			log.Println("-----------------------------------------------------------------------------------------------")
+			fmt.Println("***************************************************************************************************************************************")
 		}(details)
 	})
 }

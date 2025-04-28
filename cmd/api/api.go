@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -54,7 +55,7 @@ func (s *Server) Run() error {
 	deleteUserDlyaFrontov(router, s.db)
 
 	log.Printf("[INFO] Starting server on %s...", s.address)
-	log.Println("-----------------------------------------------------------------------------------------------")
+	fmt.Println("***************************************************************************************************************************************")
 
 	standardChain := middleware.CreateChain(
 		middleware.Logging,
