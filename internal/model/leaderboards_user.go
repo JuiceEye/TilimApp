@@ -1,8 +1,8 @@
 package model
 
 type LeaderboardsUser struct {
-	UserID   int
+	UserID   int64
 	Username string
-	XPPoints int
+	XPPoints int64
 	Image    string
 }
