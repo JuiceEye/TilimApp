@@ -132,7 +132,7 @@ func (r *UserRepository) CreateUser(user *model.User) (*model.User, error) {
 }
 
 func (r *UserRepository) GetLeaderboardsUsersByID() (leaderboardsUsers []*model.LeaderboardsUser, err error) {
-	query := `SELECT u.id, u.username, up.xp_points, u.image, FROM auth.users u INNER JOIN app.user_progress up ON up.user_id = u.id ORDER BY up.xp_points`
+	query := `SELECT u.id, u.username, up.xp_points, u.image FROM auth.users u INNER JOIN app.user_progress up ON up.user_id = u.id ORDER BY up.xp_points DESC`
 
 	rows, err := r.db.Query(query)
 	if err != nil {
