@@ -10,4 +10,5 @@ type Profile struct {
 	XPPoints         int64
 	WordsLearned     int
 	LessonsDone      int
+	Image            string
 }
