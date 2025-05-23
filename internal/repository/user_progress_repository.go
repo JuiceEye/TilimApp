@@ -16,28 +16,6 @@ func NewUserProgressRepo(db *sql.DB) *UserProgressRepository {
 	}
 }
 
-func (r *UserProgressRepository) GetUserProgressByUserID(UserID int64) (*model.UserProgress, error) {
-	rows, err := r.db.Query("SELECT * FROM app.user_progress WHERE user_id = $1::INTEGER", UserID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	up := new(model.UserProgress)
-	for rows.Next() {
-		up, err = scanRowIntoUserProgress(rows)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if up.UserID == 0 {
-		return nil, ErrNotFound
-	}
-
-	return up, nil
-}
-
 func (r *UserProgressRepository) CreateUserProgress(UserID int64) (*model.UserProgress, error) {
 	up := &model.UserProgress{
 		UserID:                UserID,
@@ -62,27 +40,6 @@ func (r *UserProgressRepository) CreateUserProgress(UserID int64) (*model.UserPr
 	}
 
 	return up, nil
-}
-
-func scanRowIntoUserProgress(rows *sql.Rows) (*model.UserProgress, error) {
-	userProgress := new(model.UserProgress)
-
-	err := rows.Scan(
-		&userProgress.UserID,
-		&userProgress.StreakDays,
-		&userProgress.XPPoints,
-		&userProgress.WordsLearned,
-		&userProgress.LessonsDone,
-		&userProgress.LastLessonCompletedAt,
-		&userProgress.CreatedAt,
-		&userProgress.UpdatedAt,
-	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return userProgress, nil
 }
 
 func (r *UserProgressRepository) AddXP(userID int64, xp int64) error {
