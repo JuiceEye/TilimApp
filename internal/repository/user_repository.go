@@ -140,11 +140,9 @@ func (r *UserRepository) GetLeaderboardsUsersByID() (leaderboardsUsers []*model.
 	}
 	defer rows.Close()
 
-	for rows.Next() {
-		leaderboardsUsers, err = scanRowsIntoLeaderboardsUsers(rows)
-		if err != nil {
-			return nil, err
-		}
+	leaderboardsUsers, err = scanRowsIntoLeaderboardsUsers(rows)
+	if err != nil {
+		return nil, err
 	}
 
 	return leaderboardsUsers, nil
@@ -185,11 +183,11 @@ func scanRowsIntoLeaderboardsUsers(rows *sql.Rows) (leaderboardsUsers []*model.L
 		leaderboardsUsers = append(leaderboardsUsers, leaderboardsUser)
 	}
 
-	if err := rows.Err(); err != nil {
+	if err = rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return userProgress, nil
+	return leaderboardsUsers, nil
 }
 
 func (r *UserRepository) getCredentials(field, value string) (*UserCredentials, error) {

@@ -52,6 +52,10 @@ func (s *Server) Run() error {
 	lessonHandler := handler.NewLessonHandler(lessonService)
 	lessonHandler.RegisterRoutes(router)
 
+	leaderboardsService := service.NewLeaderboardsService(userRepo)
+	leaderboardsHandler := handler.NewLeaderboardsHandler(leaderboardsService)
+	leaderboardsHandler.RegisterRoutes(router)
+
 	deleteUserDlyaFrontov(router, s.db)
 
 	log.Printf("[INFO] Starting server on %s...", s.address)

@@ -10,13 +10,9 @@ type LeaderboardsService struct {
 	userProgressRepository *repository.UserProgressRepository
 }
 
-func NewLeaderboardsService(
-	userRepository *repository.UserRepository,
-	userProgressRepository *repository.UserProgressRepository,
-) *LeaderboardsService {
+func NewLeaderboardsService(userRepository *repository.UserRepository) *LeaderboardsService {
 	return &LeaderboardsService{
-		userRepository:         userRepository,
-		userProgressRepository: userProgressRepository,
+		userRepository: userRepository,
 	}
 }
 
