@@ -22,13 +22,13 @@ func (h *LeaderboardsHandler) RegisterRoutes(router *http.ServeMux) {
 }
 
 func (h *LeaderboardsHandler) handleGetLeaderboards(w http.ResponseWriter, r *http.Request) {
-	leaderboards, status, err := h.service.GetLeaderboards()
+	leaderboards, err := h.service.GetLeaderboards()
 	if err != nil {
-		utils.WriteError(w, status, err)
+		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	responseList := response.ToProfileResponseList(leaderboards)
+	responseList := response.ToLeaderboardsResponseList(leaderboards)
 	err = utils.WriteJSONResponse(w, http.StatusOK, responseList)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)

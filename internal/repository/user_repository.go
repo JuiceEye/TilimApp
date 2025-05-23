@@ -30,7 +30,7 @@ func (r *UserRepository) GetUserByID(UserID int64) (*model.User, error) {
 
 	u := new(model.User)
 	for rows.Next() {
-		u, err = scanRowIntoUsers(rows)
+		u, err = scanRowIntoUser(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -52,7 +52,7 @@ func (r *UserRepository) GetUserByEmail(email string) (*model.User, error) {
 
 	u := new(model.User)
 	for rows.Next() {
-		u, err = scanRowIntoUsers(rows)
+		u, err = scanRowIntoUser(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -74,7 +74,7 @@ func (r *UserRepository) GetUserByPhoneNumber(phoneNumber string) (*model.User, 
 
 	u := new(model.User)
 	for rows.Next() {
-		u, err = scanRowIntoUsers(rows)
+		u, err = scanRowIntoUser(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -99,7 +99,7 @@ func (r *UserRepository) GetUserByUsername(username string) (*model.User, error)
 
 	u := new(model.User)
 	for rows.Next() {
-		u, err = scanRowIntoUsers(rows)
+		u, err = scanRowIntoUser(rows)
 		if err != nil {
 			return nil, err
 		}
@@ -131,7 +131,26 @@ func (r *UserRepository) CreateUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-func scanRowIntoUsers(rows *sql.Rows) (*model.User, error) {
+func (r *UserRepository) GetLeaderboardsUsersByID() (leaderboardsUsers []*model.LeaderboardsUser, err error) {
+	query := `SELECT u.id, u.username, up.xp_points, u.image, FROM auth.users u INNER JOIN app.user_progress up ON up.user_id = u.id ORDER BY up.xp_points`
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		leaderboardsUsers, err = scanRowsIntoLeaderboardsUsers(rows)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return leaderboardsUsers, nil
+}
+
+func scanRowIntoUser(rows *sql.Rows) (*model.User, error) {
 	user := new(model.User)
 
 	err := rows.Scan(
@@ -147,6 +166,30 @@ func scanRowIntoUsers(rows *sql.Rows) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+func scanRowsIntoLeaderboardsUsers(rows *sql.Rows) (leaderboardsUsers []*model.LeaderboardsUser, err error) {
+	for rows.Next() {
+		leaderboardsUser := new(model.LeaderboardsUser)
+
+		err = rows.Scan(
+			&leaderboardsUser.UserID,
+			&leaderboardsUser.Username,
+			&leaderboardsUser.XPPoints,
+			&leaderboardsUser.Image,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+		leaderboardsUsers = append(leaderboardsUsers, leaderboardsUser)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return userProgress, nil
 }
 
 func (r *UserRepository) getCredentials(field, value string) (*UserCredentials, error) {
