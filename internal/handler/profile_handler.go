@@ -22,7 +22,7 @@ func NewProfileHandler(service *service.ProfileService) *ProfileHandler {
 
 func (h *ProfileHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("GET /profile/{user_id}", h.handleGetProfile)
-	router.HandleFunc("POST /profile/xp", h.handleAddXP)
+	// router.HandleFunc("POST /profile/xp", h.handleAddXP)
 }
 
 func (h *ProfileHandler) handleGetProfile(w http.ResponseWriter, r *http.Request) {
