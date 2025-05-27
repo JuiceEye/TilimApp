@@ -49,7 +49,9 @@ func (s *Server) Run() error {
 	answerRepo := repository.NewAnswerRepo(s.db)
 	exerciseRepo := repository.NewExerciseRepo(s.db)
 	lessonService := service.NewLessonService(lessonRepo, exerciseRepo, answerRepo)
-	lessonHandler := handler.NewLessonHandler(lessonService)
+	lessonCompletionRepo := repository.NewLessonCompletionRepo(s.db)
+	lessonCompletionService := service.NewLessonCompletionService(lessonRepo, lessonCompletionRepo)
+	lessonHandler := handler.NewLessonHandler(lessonService, lessonCompletionService)
 	lessonHandler.RegisterRoutes(router)
 
 	leaderboardsService := service.NewLeaderboardsService(userRepo)

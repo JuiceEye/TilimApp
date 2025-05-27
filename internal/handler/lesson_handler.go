@@ -18,9 +18,13 @@ type LessonHandler struct {
 	completionService *service.LessonCompletionService
 }
 
-func NewLessonHandler(service *service.LessonService) *LessonHandler {
+func NewLessonHandler(
+	lessonService *service.LessonService,
+	completionService *service.LessonCompletionService,
+) *LessonHandler {
 	return &LessonHandler{
-		lessonService: service,
+		lessonService:     lessonService,
+		completionService: completionService,
 	}
 }
 
