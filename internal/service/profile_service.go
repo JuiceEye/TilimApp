@@ -56,16 +56,16 @@ func (s *ProfileService) GetProfile(userID int64) (profile *model.Profile, statu
 	return profile, http.StatusOK, nil
 }
 
-func (s *ProfileService) AddXPPoints(userID, xp int64) (status int, err error) {
-	if _, err := s.userRepository.GetUserByID(userID); err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
-			return http.StatusNotFound, err
-		}
-		return http.StatusInternalServerError, err
-	}
-
-	if err := s.userProgressRepository.AddXP(userID, xp); err != nil {
-		return http.StatusInternalServerError, err
-	}
-	return http.StatusOK, nil
-}
+// func (s *ProfileService) AddXPPoints(userID, xp int64) (status int, err error) {
+// 	if _, err := s.userRepository.GetUserByID(userID); err != nil {
+// 		if errors.Is(err, repository.ErrNotFound) {
+// 			return http.StatusNotFound, err
+// 		}
+// 		return http.StatusInternalServerError, err
+// 	}
+//
+// 	if err := s.userProgressRepository.AddXP(userID, xp); err != nil {
+// 		return http.StatusInternalServerError, err
+// 	}
+// 	return http.StatusOK, nil
+// }

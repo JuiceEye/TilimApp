@@ -88,12 +88,12 @@ func scanRowIntoUserProgress(rows *sql.Rows) (*model.UserProgress, error) {
 	return userProgress, nil
 }
 
-func (r *UserProgressRepository) AddXP(userID int64, xp int64) error {
-	_, err := r.db.Exec(
-		`UPDATE app.user_progress
-         SET xp_points     = xp_points + $1, lessons_done = lessons_done + 1, updated_at   = NOW()
-         WHERE user_id = $2`,
-		xp, userID,
-	)
-	return err
-}
+// func (r *UserProgressRepository) AddXP(userID int64, xp int64) error {
+// 	_, err := r.db.Exec(
+// 		`UPDATE app.user_progress
+//          SET xp_points     = xp_points + $1, lessons_done = lessons_done + 1, updated_at   = NOW()
+//          WHERE user_id = $2`,
+// 		xp, userID,
+// 	)
+// 	return err
+// }
