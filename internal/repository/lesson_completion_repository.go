@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"tilimauth/internal/model"
-	"time"
 )
 
 type LessonCompletionRepository struct {

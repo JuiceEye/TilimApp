@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
 )
@@ -27,16 +26,15 @@ func (s *LessonCompletionService) CompleteLesson(lessonCompletion *model.LessonC
 		return err
 	}
 
-	if isExists, err := s.completionRepo.Exists(lessonCompletion.UserID, lessonCompletion.LessonID); err != nil {
+	exists, err := s.completionRepo.Exists(lessonCompletion.UserID, lessonCompletion.LessonID)
+	if err != nil {
 		return err
-	} else {
-		if isExists {
-			return errors.New("lesson is already completed")
-		}
 	}
 
-	if err = s.completionRepo.Register(lessonCompletion); err != nil {
-		return err
+	if !exists {
+		if err = s.completionRepo.Register(lessonCompletion); err != nil {
+			return err
+		}
 	}
 
 	return nil
