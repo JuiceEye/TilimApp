@@ -6,9 +6,11 @@ import (
 	"net/http"
 	"strconv"
 	"tilimauth/internal/dto/request"
+	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
 	"tilimauth/internal/service"
 	"tilimauth/internal/utils"
+	"time"
 )
 
 type LessonHandler struct {
@@ -76,7 +78,13 @@ func (h *LessonHandler) handleCompleteLesson(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	err = h.completionService.CompleteLesson(payload.UserID, payload.LessonID)
+	lessonCompletion := &model.LessonCompletion{
+		UserID:        payload.UserID,
+		LessonID:      payload.LessonID,
+		DateCompleted: time.Now(),
+	}
+
+	err = h.completionService.CompleteLesson(lessonCompletion)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			utils.WriteError(w, http.StatusNotFound, err)
