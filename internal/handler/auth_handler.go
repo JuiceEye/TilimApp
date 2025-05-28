@@ -27,6 +27,7 @@ func (h *AuthHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /register", h.handleRegister)
 	router.HandleFunc("POST /login", h.handleLogin)
 	router.HandleFunc("POST /refresh", h.handleRefreshToken) // это для обновления токенов эндпоинт
+	// router.HandleFunc("PUT /user/image", h.handleEditUserImage)
 }
 
 // todo: сделать логгирование стабильным (изучить log либо использовать только fmt, а не одно принта другое для ошибок
