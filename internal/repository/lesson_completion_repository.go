@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/lib/pq"
 	"tilimauth/internal/model"
 )
 
@@ -43,4 +44,29 @@ func (r *LessonCompletionRepository) Exists(userID, lessonID int64) (bool, error
 	}
 
 	return true, nil
+}
+
+func (r *LessonCompletionRepository) GetCompletedLessonIDs(userID int64, lessonIDs []int64) (completedLessonIDs []int64, err error) {
+	query := `SELECT lesson_id FROM app.lesson_completions WHERE user_id = $1 AND lesson_id = ANY($2);`
+
+	rows, err := r.db.Query(query, userID, pq.Array(lessonIDs))
+	if err != nil {
+		return nil, fmt.Errorf("error fetching lesson completions: %w", err)
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var id int64
+		err = rows.Scan(&id)
+		if err != nil {
+			return nil, fmt.Errorf("error fetching lesson completions: %w", err)
+		}
+		completedLessonIDs = append(completedLessonIDs, id)
+	}
+
+	if rows.Err() != nil {
+		return []int64{}, rows.Err()
+	}
+
+	return completedLessonIDs, nil
 }

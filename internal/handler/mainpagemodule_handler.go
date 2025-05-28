@@ -40,7 +40,8 @@ func (h *ModuleHandler) handleGetMainPageModule(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	module, err := h.service.GetMainPageModuleByID(payload.ModuleID)
+	userID := int64(32)
+	module, err := h.service.GetMainPageModuleByID(payload.ModuleID, userID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			utils.WriteError(w, http.StatusNotFound, err)
