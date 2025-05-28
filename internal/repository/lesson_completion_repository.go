@@ -17,10 +17,10 @@ func NewLessonCompletionRepo(db *sql.DB) *LessonCompletionRepository {
 	}
 }
 
-func (r *LessonCompletionRepository) Register(lessonCompletion *model.LessonCompletion) error {
+func (r *LessonCompletionRepository) RegisterTx(tx *sql.Tx, lessonCompletion *model.LessonCompletion) error {
 	query := `INSERT INTO app.lesson_completions (user_id, lesson_id, date_completed) VALUES ($1, $2, $3)`
 
-	_, err := r.db.Exec(query, lessonCompletion.UserID, lessonCompletion.LessonID, lessonCompletion.DateCompleted)
+	_, err := tx.Exec(query, lessonCompletion.UserID, lessonCompletion.LessonID, lessonCompletion.DateCompleted)
 	if err != nil {
 		return fmt.Errorf("failed to insert completion: %w", err)
 	}

@@ -50,7 +50,7 @@ func (s *Server) Run() error {
 	exerciseRepo := repository.NewExerciseRepo(s.db)
 	lessonService := service.NewLessonService(lessonRepo, exerciseRepo, answerRepo)
 	lessonCompletionRepo := repository.NewLessonCompletionRepo(s.db)
-	lessonCompletionService := service.NewLessonCompletionService(lessonRepo, lessonCompletionRepo)
+	lessonCompletionService := service.NewLessonCompletionService(lessonRepo, lessonCompletionRepo, userRepo)
 	lessonHandler := handler.NewLessonHandler(lessonService, lessonCompletionService)
 	lessonHandler.RegisterRoutes(router)
 

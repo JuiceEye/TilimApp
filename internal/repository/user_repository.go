@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"tilimauth/internal/model"
+	"time"
 )
 
 type UserRepository struct {
@@ -19,6 +20,10 @@ func NewUserRepo(db *sql.DB) *UserRepository {
 	return &UserRepository{
 		db: db,
 	}
+}
+
+func (r *UserRepository) DB() *sql.DB {
+	return r.db
 }
 
 func (r *UserRepository) GetUserByID(UserID int64) (*model.User, error) {
@@ -212,4 +217,15 @@ func (r *UserRepository) GetCredentialsByUsername(username string) (*UserCredent
 
 func (r *UserRepository) GetCredentialsByEmail(email string) (*UserCredentials, error) {
 	return r.getCredentials("email", email)
+}
+
+func (r *UserRepository) IncrementStatsTx(tx *sql.Tx, userID, xp int64) error {
+	query := `
+		UPDATE app.user_progress
+        SET xp_points = xp_points + $1, lessons_done = lessons_done + 1, updated_at = CURRENT_TIME
+        WHERE user_id = $2
+	`
+
+	_, err := tx.Exec(query, xp, userID)
+	return err
 }
