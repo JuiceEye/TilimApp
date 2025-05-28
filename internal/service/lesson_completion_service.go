@@ -57,5 +57,4 @@ func (s *LessonCompletionService) CompleteLesson(lessonCompletion *model.LessonC
 	}
 
 	return tx.Commit()
-
 }
