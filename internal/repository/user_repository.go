@@ -135,6 +135,24 @@ func (r *UserRepository) CreateUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
+func (r *UserRepository) ChangeUserFields(u *model.User) error {
+	query := `
+		UPDATE auth.users SET 
+			username = $1,
+			password = $2,
+			email = $3,
+			phone_number = $4
+		WHERE id = $5
+    `
+	_, err := r.db.Exec(query, u.Username, u.Password, u.Email, u.PhoneNumber, u.ID)
+
+	if err != nil {
+		return fmt.Errorf("failed to update user fields: %w", err)
+	}
+
+	return nil
+}
+
 func (r *UserRepository) UpdateUserImageByID(userID int64, image string) error {
 	_, err := r.db.Exec(`UPDATE auth.users SET image = $1 WHERE id = $2`, image, userID)
 
