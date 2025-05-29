@@ -1,5 +1,7 @@
 package repository
 
-import "fmt"
+import (
+	"errors"
+)
 
-var ErrNotFound = fmt.Errorf("запись не найдена")
+var ErrNotFound = errors.New("запись не найдена")
