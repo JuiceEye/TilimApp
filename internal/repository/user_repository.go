@@ -135,6 +135,16 @@ func (r *UserRepository) CreateUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
+func (r *UserRepository) UpdateUserImageByID(userID int64, image string) error {
+	_, err := r.db.Exec(`UPDATE auth.users SET image = $1 WHERE id = $2`, image, userID)
+
+	if err != nil {
+		return fmt.Errorf("failed to update user image: %w", err)
+	}
+
+	return nil
+}
+
 func (r *UserRepository) GetLeaderboardsUsersByID() (leaderboardsUsers []*model.LeaderboardsUser, err error) {
 	query := `SELECT u.id, u.username, up.xp_points, u.image FROM auth.users u INNER JOIN app.user_progress up ON up.user_id = u.id ORDER BY up.xp_points DESC`
 

@@ -55,3 +55,7 @@ func (s *ProfileService) GetProfile(userID int64) (profile *model.Profile, statu
 
 	return profile, http.StatusOK, nil
 }
+
+func (s *ProfileService) UpdateProfilePicture(userID int64, image string) error {
+	return s.userRepository.UpdateUserImageByID(userID, image)
+}

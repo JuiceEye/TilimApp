@@ -15,3 +15,15 @@ func (req *GetProfileRequest) ValidateRequest() (err error) {
 
 	return nil
 }
+
+type UpdateProfilePictureRequest struct {
+	Image string `json:"image"`
+}
+
+func (req *UpdateProfilePictureRequest) ValidateRequest() (err error) {
+	if req.Image == "" {
+		return fmt.Errorf("отсутствуют обязательные параметры: [image]")
+	}
+
+	return nil
+}

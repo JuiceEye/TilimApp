@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 	"tilimauth/internal/dto/request"
 	"tilimauth/internal/dto/response"
+	"tilimauth/internal/repository"
 	"tilimauth/internal/service"
 	"tilimauth/internal/utils"
 )
@@ -57,6 +59,33 @@ func (h *ProfileHandler) handleGetProfile(w http.ResponseWriter, r *http.Request
 	}
 
 	err = utils.WriteJSONResponse(w, http.StatusOK, profileResponse)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+}
+
+func (h *ProfileHandler) handleUpdateProfilePicture(w http.ResponseWriter, r *http.Request) {
+	payload := &request.UpdateProfilePictureRequest{}
+
+	if err := utils.ParseBodyAndValidate(r, payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	userID := int64(32)
+
+	err := h.service.UpdateProfilePicture(userID, payload.Image)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			utils.WriteError(w, http.StatusNotFound, err)
+		} else {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]int64{"profile": userID})
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
