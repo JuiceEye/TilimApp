@@ -27,7 +27,6 @@ func (h *AuthHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("POST /register", h.handleRegister)
 	router.HandleFunc("POST /login", h.handleLogin)
 	router.HandleFunc("POST /refresh", h.handleRefreshToken) // это для обновления токенов эндпоинт
-	// router.HandleFunc("PUT /user/profile-picture", h.handleUpdateProfilePicture)
 }
 
 func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
