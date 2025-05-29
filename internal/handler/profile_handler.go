@@ -85,7 +85,7 @@ func (h *ProfileHandler) handleUpdateProfilePicture(w http.ResponseWriter, r *ht
 		return
 	}
 
-	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]int64{"profile": userID})
+	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]int64{"user_id": userID})
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
