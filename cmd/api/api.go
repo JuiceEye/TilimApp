@@ -63,21 +63,21 @@ func (s *Server) Run() error {
 
 	mainRouter := http.NewServeMux()
 
+	protectedChain := middleware.CreateChain(
+		middleware.Auth,
+	)
+
 	standardChain := middleware.CreateChain(
 		middleware.Logging,
 		middleware.SetCorsPolicy,
 	)
 
-	protectedChain := middleware.CreateChain(
-		middleware.Auth,
-	)
-
-	mainRouter.Handle("/auth/", publicRouter)
-
 	// idk chatgpt said I need to do this instead of Handle(), no clue what the difference is
 	mainRouter.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		protectedChain(protectedRouter).ServeHTTP(w, r)
 	})
+
+	mainRouter.Handle("/auth/", http.StripPrefix("/auth", publicRouter))
 
 	log.Printf("[INFO] Starting server on %s...", s.address)
 	fmt.Println("***************************************************************************************************************************************")
