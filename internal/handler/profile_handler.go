@@ -75,9 +75,13 @@ func (h *ProfileHandler) handleUpdateProfilePicture(w http.ResponseWriter, r *ht
 		return
 	}
 
-	userID := int64(32)
+	userID, err := utils.GetUserID(r)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
 
-	err := h.service.UpdateProfilePicture(userID, payload.Image)
+	err = h.service.UpdateProfilePicture(userID, payload.Image)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			utils.WriteError(w, http.StatusNotFound, err)
@@ -102,9 +106,13 @@ func (h *ProfileHandler) handleUpdateUsername(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	userID := int64(32)
+	userID, err := utils.GetUserID(r)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
 
-	err := h.service.UpdateUsername(userID, payload.Username)
+	err = h.service.UpdateUsername(userID, payload.Username)
 	if err != nil {
 		var bre *service.BadRequestError
 		if errors.As(err, &bre) {
@@ -132,9 +140,13 @@ func (h *ProfileHandler) handleUpdateEmail(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	userID := int64(32)
+	userID, err := utils.GetUserID(r)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
 
-	err := h.service.UpdateEmail(userID, payload.Email)
+	err = h.service.UpdateEmail(userID, payload.Email)
 	if err != nil {
 		var bre *service.BadRequestError
 		if errors.As(err, &bre) {

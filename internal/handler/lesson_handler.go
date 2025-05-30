@@ -75,7 +75,11 @@ func (h *LessonHandler) handleCompleteLesson(w http.ResponseWriter, r *http.Requ
 		return
 	}
 	payload.LessonID = lessonID
-	payload.UserID = int64(32)
+	payload.UserID, err = utils.GetUserID(r)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
 
 	if err := utils.ParseBodyAndValidate(r, payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)

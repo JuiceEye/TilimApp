@@ -3,13 +3,10 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"strconv"
 	"tilimauth/internal/auth"
 	"tilimauth/internal/utils"
 )
-
-type contextKey string
-
-const UserIDKey = contextKey("userID")
 
 func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +16,8 @@ func Auth(next http.Handler) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), UserIDKey, userID)
+		userIDStr := strconv.FormatInt(userID, 10)
+		ctx := context.WithValue(r.Context(), utils.UserIDKey, userIDStr)
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

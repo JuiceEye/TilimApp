@@ -40,9 +40,9 @@ func (h *ModuleHandler) handleGetMainPageModule(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	userID, ok := utils.GetUserID(r)
-	if !ok {
-		http.Error(w, "User ID not found", http.StatusInternalServerError)
+	userID, err := utils.GetUserID(r)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
 

@@ -8,9 +8,12 @@ import (
 	"net/http"
 	"strconv"
 	"tilimauth/internal/dto/request"
-	"tilimauth/internal/middleware"
 	"unicode"
 )
+
+type contextKey string
+
+const UserIDKey = contextKey("userID")
 
 func ParseRequestBody(r *http.Request, body any) error {
 	if r.ContentLength == 0 {
@@ -23,13 +26,9 @@ func ParseRequestBody(r *http.Request, body any) error {
 }
 
 func ParseBodyAndValidate(r *http.Request, req request.Request) error {
-	// log.Printf("[INFO] Parsing request %v", r.RequestURI)
 	if err := ParseRequestBody(r, req); err != nil {
 		return fmt.Errorf("ошибка при парсинге JSON тела")
 	}
-
-	// jsonBody, _ := json.MarshalIndent(req, "", "  ")
-	// fmt.Println(string(jsonBody))
 
 	if err := req.ValidateRequest(); err != nil {
 		return err
@@ -41,17 +40,19 @@ func ParseBodyAndValidate(r *http.Request, req request.Request) error {
 func WriteJSONResponse(w http.ResponseWriter, status int, payload any) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	// jsonPayload, _ := json.MarshalIndent(payload, "", "  ")
-	// log.Printf("[INFO] Response: %v \n", string(jsonPayload))
-	// log.Println("-----------------------------------------------------------------------------------------------")
 	return json.NewEncoder(w).Encode(payload)
 }
 
 func WriteError(w http.ResponseWriter, status int, err error) {
-	if status == 500 {
+	switch status {
+	case http.StatusInternalServerError:
 		log.Printf("\n\n [ERROR] %s \n\n", err.Error())
 		err = fmt.Errorf("что-то пошло не так")
+	case http.StatusUnauthorized:
+		log.Printf("\n\n [ERROR] %s \n\n", err.Error())
+		err = fmt.Errorf("пользователь не авторизован")
 	}
+
 	_ = WriteJSONResponse(w, status, map[string]string{"error": capitalizeFirst(err.Error())})
 }
 
@@ -76,11 +77,15 @@ func ComparePassword(hashedPassword, userPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(userPassword))
 }
 
-func GetUserID(r *http.Request) (int64, bool) {
-	userIDstr, ok := r.Context().Value(middleware.UserIDKey).(string)
-	userID, err := strconv.ParseInt(userIDstr, 10, 64)
-	if err != nil {
-		// handle error
+func GetUserID(r *http.Request) (int64, error) {
+	userIDStr, ok := r.Context().Value(UserIDKey).(string)
+	if !ok {
+		panic("userID not found in context — middleware missing?")
 	}
-	return userID, ok
+
+	userID, err := strconv.ParseInt(userIDStr, 10, 64)
+	if err != nil {
+		return 0, err
+	}
+	return userID, nil
 }

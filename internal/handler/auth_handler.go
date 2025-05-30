@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"tilimauth/internal/auth"
 	"tilimauth/internal/dto/request"
 	"tilimauth/internal/dto/response"
@@ -109,22 +108,23 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (h *AuthHandler) handleProtectedRoute(w http.ResponseWriter, r *http.Request) {
-	createdUser, err := auth.VerifyTokens(r, "access")
-	if err != nil {
-		utils.WriteError(w, http.StatusUnauthorized, err)
-		return
-	}
-
-	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]string{
-		"message": "Access allowed",
-		"user_id": strconv.FormatInt(createdUser, 10),
-	})
-	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
-		return
-	}
-}
+// Перенесено в middleware.Auth. Хз нужно ли тут, добавляла ты, Настя.
+// func (h *AuthHandler) handleProtectedRoute(w http.ResponseWriter, r *http.Request) {
+// 	createdUser, err := auth.VerifyTokens(r, "access")
+// 	if err != nil {
+// 		utils.WriteError(w, http.StatusUnauthorized, err)
+// 		return
+// 	}
+//
+// 	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]string{
+// 		"message": "Access allowed",
+// 		"user_id": strconv.FormatInt(createdUser, 10),
+// 	})
+// 	if err != nil {
+// 		utils.WriteError(w, http.StatusInternalServerError, err)
+// 		return
+// 	}
+// }
 
 // только для получения аксесс токена, поэтому не хендлим защищённый маршрут как для аксесса
 func (h *AuthHandler) handleRefreshToken(w http.ResponseWriter, r *http.Request) {
@@ -150,5 +150,4 @@ func (h *AuthHandler) handleRefreshToken(w http.ResponseWriter, r *http.Request)
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
-
 }

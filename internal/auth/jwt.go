@@ -78,12 +78,12 @@ func VerifyTokens(request *http.Request, tokenType string /*tokenString string*/
 	if tokenType == "access" {
 		authHeader := request.Header.Get("Authorization")
 		if authHeader == "" {
-			return 0, fmt.Errorf("требуется заголовок (header) от access token")
+			return 0, fmt.Errorf("требуется заголовок c access token")
 		}
 
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
-			return 0, fmt.Errorf("недопустимый формат заголовка (header) авторизации")
+			return 0, fmt.Errorf("недопустимый формат заголовка авторизации")
 		}
 
 		tokenString = parts[1]

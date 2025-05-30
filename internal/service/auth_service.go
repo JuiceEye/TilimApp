@@ -26,7 +26,7 @@ func NewAuthService(
 }
 
 func (s *AuthService) Register(user model.User) (createdUser *model.User, status int, err error) {
-	if _, err := s.userRepository.GetUserByEmail(user.Email); err == nil {
+	if _, err = s.userRepository.GetUserByEmail(user.Email); err == nil {
 		return nil, http.StatusBadRequest, fmt.Errorf("на эту электронную почту уже зарегистрирован аккаунт")
 	} else if !errors.Is(err, repository.ErrNotFound) {
 		return nil, http.StatusInternalServerError, err
@@ -44,7 +44,6 @@ func (s *AuthService) Register(user model.User) (createdUser *model.User, status
 		return nil, http.StatusInternalServerError, err
 	}
 
-	// user.Password = Bcrypt(user.Password)
 	createdUser, err = s.userRepository.CreateUser(&user)
 	if err != nil {
 		return nil, http.StatusInternalServerError, err
