@@ -26,18 +26,19 @@ func NewServer(address string, db *sql.DB) *Server {
 }
 
 func (s *Server) Run() error {
-	router := http.NewServeMux()
+	publicRouter := http.NewServeMux()
+	protectedRouter := http.NewServeMux()
 
 	userRepo := repository.NewUserRepo(s.db)
 	userProgressRepo := repository.NewUserProgressRepo(s.db)
 
 	userService := service.NewAuthService(userRepo, userProgressRepo)
-	userHandler := handler.NewAuthHandler(userService)
-	userHandler.RegisterRoutes(router)
+	authHandler := handler.NewAuthHandler(userService)
+	authHandler.RegisterRoutes(publicRouter)
 
 	profileService := service.NewProfileService(userRepo, userProgressRepo)
 	profileHandler := handler.NewProfileHandler(profileService)
-	profileHandler.RegisterRoutes(router)
+	profileHandler.RegisterRoutes(protectedRouter)
 
 	moduleRepo := repository.NewModuleRepo(s.db)
 	sectionRepo := repository.NewSectionRepo(s.db)
@@ -45,29 +46,43 @@ func (s *Server) Run() error {
 	lessonCompletionRepo := repository.NewLessonCompletionRepo(s.db)
 	moduleMainPageService := service.NewMainPageModuleService(moduleRepo, sectionRepo, lessonRepo, lessonCompletionRepo)
 	moduleMainPageHandler := handler.NewMainPageModuleHandler(moduleMainPageService)
-	moduleMainPageHandler.RegisterRoutes(router)
+	moduleMainPageHandler.RegisterRoutes(protectedRouter)
 
 	answerRepo := repository.NewAnswerRepo(s.db)
 	exerciseRepo := repository.NewExerciseRepo(s.db)
 	lessonService := service.NewLessonService(lessonRepo, exerciseRepo, answerRepo)
 	lessonCompletionService := service.NewLessonCompletionService(lessonRepo, lessonCompletionRepo, userRepo)
 	lessonHandler := handler.NewLessonHandler(lessonService, lessonCompletionService)
-	lessonHandler.RegisterRoutes(router)
+	lessonHandler.RegisterRoutes(protectedRouter)
 
 	leaderboardsService := service.NewLeaderboardsService(userRepo)
 	leaderboardsHandler := handler.NewLeaderboardsHandler(leaderboardsService)
-	leaderboardsHandler.RegisterRoutes(router)
+	leaderboardsHandler.RegisterRoutes(protectedRouter)
 
-	deleteUserDlyaFrontov(router, s.db)
+	deleteUserDlyaFrontov(publicRouter, s.db)
 
-	log.Printf("[INFO] Starting server on %s...", s.address)
-	fmt.Println("***************************************************************************************************************************************")
+	mainRouter := http.NewServeMux()
 
 	standardChain := middleware.CreateChain(
 		middleware.Logging,
 		middleware.SetCorsPolicy,
 	)
-	return http.ListenAndServe(s.address, standardChain(router))
+
+	protectedChain := middleware.CreateChain(
+		middleware.Auth,
+	)
+
+	mainRouter.Handle("/auth/", publicRouter)
+
+	// idk chatgpt said I need to do this instead of Handle(), no clue what the difference is
+	mainRouter.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		protectedChain(protectedRouter).ServeHTTP(w, r)
+	})
+
+	log.Printf("[INFO] Starting server on %s...", s.address)
+	fmt.Println("***************************************************************************************************************************************")
+
+	return http.ListenAndServe(s.address, standardChain(mainRouter))
 }
 
 // delete later

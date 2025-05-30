@@ -6,7 +6,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
+	"strconv"
 	"tilimauth/internal/dto/request"
+	"tilimauth/internal/middleware"
 	"unicode"
 )
 
@@ -72,4 +74,13 @@ func HashPassword(password string) (string, error) {
 
 func ComparePassword(hashedPassword, userPassword string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(userPassword))
+}
+
+func GetUserID(r *http.Request) (int64, bool) {
+	userIDstr, ok := r.Context().Value(middleware.UserIDKey).(string)
+	userID, err := strconv.ParseInt(userIDstr, 10, 64)
+	if err != nil {
+		// handle error
+	}
+	return userID, ok
 }
