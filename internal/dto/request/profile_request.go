@@ -27,3 +27,15 @@ func (req *UpdateProfilePictureRequest) ValidateRequest() (err error) {
 
 	return nil
 }
+
+type UpdateUsernameRequest struct {
+	Username string `json:"username"`
+}
+
+func (req *UpdateUsernameRequest) ValidateRequest() (err error) {
+	if req.Username == "" {
+		return fmt.Errorf("отсутствуют обязательные параметры: [username]")
+	}
+
+	return nil
+}

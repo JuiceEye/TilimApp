@@ -68,13 +68,13 @@ func (s *ProfileService) UpdateUsername(userID int64, newUsername string) error 
 	}
 
 	if currentUser.Username == newUsername {
-		return errors.New("имя пользователя должно отличаться от старого")
+		return &BadRequestError{Msg: "имя пользователя должно отличаться от старого"}
 	}
 
 	otherUser, err := s.userRepository.GetUserByUsername(newUsername)
 	if err == nil {
 		if otherUser.ID != currentUser.ID {
-			return errors.New("имя пользователя уже занято")
+			return &BadRequestError{Msg: "имя пользователя уже занято"}
 		}
 	} else if !errors.Is(err, repository.ErrNotFound) {
 		return fmt.Errorf("не удалось проверить имя пользователя: %w", err)
