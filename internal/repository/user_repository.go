@@ -138,12 +138,12 @@ func (r *UserRepository) CreateUser(user *model.User) (*model.User, error) {
 func (r *UserRepository) ChangeUserFields(userID int64, u *model.User) error {
 	query := `
 		UPDATE auth.users SET 
-			username = $1,
-			password = $2,
-			email = $3,
-			phone_number = $4
+			username     = CASE WHEN $1 != '' THEN $1 ELSE username END,
+			password     = CASE WHEN $2 != '' THEN $2 ELSE password END,
+			email        = CASE WHEN $3 != '' THEN $3 ELSE email END,
+			phone_number = CASE WHEN $4 != '' THEN $4 ELSE phone_number END
 		WHERE id = $5
-    `
+	`
 	_, err := r.db.Exec(query, u.Username, u.Password, u.Email, u.PhoneNumber, userID)
 
 	if err != nil {
