@@ -82,3 +82,25 @@ func (s *ProfileService) UpdateUsername(userID int64, newUsername string) error 
 
 	return s.userRepository.ChangeUserFields(userID, &model.User{Username: newUsername})
 }
+
+func (s *ProfileService) UpdateEmail(userID int64, newEmail string) error {
+	currentUser, err := s.userRepository.GetUserByID(userID)
+	if err != nil {
+		return err
+	}
+
+	if currentUser.Email == newEmail {
+		return &BadRequestError{Msg: "почта должна отличаться от старой"}
+	}
+
+	otherUser, err := s.userRepository.GetUserByEmail(newEmail)
+	if err == nil {
+		if otherUser.ID != currentUser.ID {
+			return &BadRequestError{Msg: "почта уже используется"}
+		}
+	} else if !errors.Is(err, repository.ErrNotFound) {
+		return fmt.Errorf("не удалось проверить почту: %w", err)
+	}
+
+	return s.userRepository.ChangeUserFields(userID, &model.User{Email: newEmail})
+}

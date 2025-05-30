@@ -39,3 +39,15 @@ func (req *UpdateUsernameRequest) ValidateRequest() (err error) {
 
 	return nil
 }
+
+type UpdateEmailRequest struct {
+	Email string `json:"email"`
+}
+
+func (req *UpdateEmailRequest) ValidateRequest() (err error) {
+	if req.Email == "" {
+		return fmt.Errorf("отсутствуют обязательные параметры: [email]")
+	}
+
+	return nil
+}
