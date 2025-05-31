@@ -54,6 +54,7 @@ func (h *ProfileHandler) handleGetProfile(w http.ResponseWriter, r *http.Request
 		UserID:           profile.UserID,
 		Username:         profile.Username,
 		RegistrationDate: profile.RegistrationDate,
+		Image:            profile.Image,
 		StreakDays:       profile.StreakDays,
 		XPPoints:         profile.XPPoints,
 		WordsLearned:     profile.WordsLearned,

@@ -47,6 +47,7 @@ func (s *ProfileService) GetProfile(userID int64) (profile *model.Profile, statu
 	profile = &model.Profile{
 		UserID:           user.ID,
 		Username:         user.Username,
+		Image:            user.Image,
 		RegistrationDate: user.RegistrationDate,
 		StreakDays:       userProgress.StreakDays,
 		XPPoints:         userProgress.XPPoints,
@@ -58,7 +59,7 @@ func (s *ProfileService) GetProfile(userID int64) (profile *model.Profile, statu
 }
 
 func (s *ProfileService) UpdateProfilePicture(userID int64, image string) error {
-	return s.userRepository.UpdateUserImageByID(userID, image)
+	return s.userRepository.ChangeUserFields(userID, &model.User{Image: image})
 }
 
 func (s *ProfileService) UpdateUsername(userID int64, newUsername string) error {

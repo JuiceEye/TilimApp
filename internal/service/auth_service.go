@@ -32,12 +32,6 @@ func (s *AuthService) Register(user model.User) (createdUser *model.User, status
 		return nil, http.StatusInternalServerError, err
 	}
 
-	if _, err = s.userRepository.GetUserByPhoneNumber(user.PhoneNumber); err == nil {
-		return nil, http.StatusBadRequest, fmt.Errorf("на этот номер уже зарегистрирован аккаунт")
-	} else if !errors.Is(err, repository.ErrNotFound) {
-		return nil, http.StatusInternalServerError, err
-	}
-
 	if _, err = s.userRepository.GetUserByUsername(user.Username); err == nil {
 		return nil, http.StatusBadRequest, fmt.Errorf("имя пользователя уже занято")
 	} else if !errors.Is(err, repository.ErrNotFound) {

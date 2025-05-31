@@ -47,7 +47,6 @@ func (h *AuthHandler) handleRegister(w http.ResponseWriter, r *http.Request) {
 		Username:         payload.Username,
 		Password:         hashedPassword,
 		Email:            payload.Email,
-		PhoneNumber:      payload.PhoneNumber,
 		Image:            payload.Image,
 		RegistrationDate: time.Now(),
 	}

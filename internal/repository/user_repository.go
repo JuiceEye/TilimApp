@@ -26,7 +26,7 @@ func (r *UserRepository) DB() *sql.DB {
 }
 
 func (r *UserRepository) GetUserByID(UserID int64) (*model.User, error) {
-	rows, err := r.db.Query("SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE id = $1::INTEGER", UserID)
+	rows, err := r.db.Query("SELECT id, username, email, registration_date, image FROM auth.users WHERE id = $1::INTEGER", UserID)
 	if err != nil {
 		return nil, err
 	}
@@ -48,29 +48,7 @@ func (r *UserRepository) GetUserByID(UserID int64) (*model.User, error) {
 }
 
 func (r *UserRepository) GetUserByEmail(email string) (*model.User, error) {
-	rows, err := r.db.Query("SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE email = $1::TEXT", email)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	u := new(model.User)
-	for rows.Next() {
-		u, err = scanRowIntoUser(rows)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if u.ID == 0 {
-		return nil, ErrNotFound
-	}
-
-	return u, nil
-}
-
-func (r *UserRepository) GetUserByPhoneNumber(phoneNumber string) (*model.User, error) {
-	rows, err := r.db.Query("SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE phone_number = $1::TEXT", phoneNumber)
+	rows, err := r.db.Query("SELECT id, username, email, registration_date, image FROM auth.users WHERE email = $1::TEXT", email)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +71,7 @@ func (r *UserRepository) GetUserByPhoneNumber(phoneNumber string) (*model.User, 
 
 func (r *UserRepository) GetUserByUsername(username string) (*model.User, error) {
 	rows, err := r.db.Query(
-		"SELECT id, username, email, phone_number, registration_date FROM auth.users WHERE username = $1::TEXT",
+		"SELECT id, username, email, registration_date, image FROM auth.users WHERE username = $1::TEXT",
 		username,
 	)
 	if err != nil {
@@ -118,12 +96,11 @@ func (r *UserRepository) GetUserByUsername(username string) (*model.User, error)
 
 func (r *UserRepository) CreateUser(user *model.User) (*model.User, error) {
 	err := r.db.QueryRow(
-		`INSERT INTO auth.users (username, password, email, phone_number, image, registration_date) 
-		VALUES ($1::TEXT, $2::TEXT, $3::TEXT, $4::TEXT, $5::TEXT, $6::TIMESTAMPTZ) RETURNING id`,
+		`INSERT INTO auth.users (username, password, email, image, registration_date) 
+		VALUES ($1::TEXT, $2::TEXT, $3::TEXT, $4::TEXT, $5::TIMESTAMPTZ) RETURNING id`,
 		user.Username,
 		user.Password,
 		user.Email,
-		user.PhoneNumber,
 		user.Image,
 		user.RegistrationDate,
 	).Scan(&user.ID)
@@ -141,10 +118,10 @@ func (r *UserRepository) ChangeUserFields(userID int64, u *model.User) error {
 			username     = CASE WHEN $1 != '' THEN $1 ELSE username END,
 			password     = CASE WHEN $2 != '' THEN $2 ELSE password END,
 			email        = CASE WHEN $3 != '' THEN $3 ELSE email END,
-			phone_number = CASE WHEN $4 != '' THEN $4 ELSE phone_number END
+			image 	     = CASE WHEN $4 != '' THEN $4 ELSE image END
 		WHERE id = $5
 	`
-	_, err := r.db.Exec(query, u.Username, u.Password, u.Email, u.PhoneNumber, userID)
+	_, err := r.db.Exec(query, u.Username, u.Password, u.Email, u.Image, userID)
 
 	if err != nil {
 		return fmt.Errorf("failed to update user fields: %w", err)
@@ -187,8 +164,8 @@ func scanRowIntoUser(rows *sql.Rows) (*model.User, error) {
 		&user.ID,
 		&user.Username,
 		&user.Email,
-		&user.PhoneNumber,
 		&user.RegistrationDate,
+		&user.Image,
 	)
 
 	if err != nil {

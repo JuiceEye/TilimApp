@@ -89,13 +89,23 @@ func (s *Server) Run() error {
 func deleteUserDlyaFrontov(router *http.ServeMux, db *sql.DB) {
 	router.HandleFunc("DELETE /users/{user_id}", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		id, _ := strconv.Atoi(r.PathValue("user_id"))
-		query := `DELETE FROM auth.users WHERE id = $1 RETURNING id`
-		var deletedUserID int
-		err := db.QueryRow(query, id).Scan(&deletedUserID)
+		userID, _ := strconv.Atoi(r.PathValue("user_id"))
+		query := `DELETE FROM app.lesson_completions WHERE user_id = $1`
+		_, err := db.Exec(query, userID)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			err := json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+			err = json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
+			if err != nil {
+				return
+			}
+			return
+		}
+		query = `DELETE FROM auth.users WHERE id = $1 RETURNING id`
+		var deletedUserID int
+		err = db.QueryRow(query, userID).Scan(&deletedUserID)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			err = json.NewEncoder(w).Encode(map[string]string{"error": err.Error()})
 			if err != nil {
 				return
 			}
