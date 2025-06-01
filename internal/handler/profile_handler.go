@@ -24,6 +24,7 @@ func NewProfileHandler(service *service.ProfileService) *ProfileHandler {
 
 func (h *ProfileHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("GET /profile/{user_id}", h.handleGetProfile)
+	router.HandleFunc("GET /me", h.handleGetMyProfile)
 	router.HandleFunc("PATCH /profile/avatar", h.handleUpdateProfilePicture)
 	router.HandleFunc("PATCH /profile/username", h.handleUpdateUsername)
 	router.HandleFunc("PATCH /profile/email", h.handleUpdateEmail)
@@ -39,7 +40,46 @@ func (h *ProfileHandler) handleGetProfile(w http.ResponseWriter, r *http.Request
 	}
 	payload.UserID = userID
 
-	if err := utils.ParseBodyAndValidate(r, payload); err != nil {
+	if err = utils.ParseBodyAndValidate(r, payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	profile, status, err := h.service.GetProfile(payload.UserID)
+	if err != nil {
+		utils.WriteError(w, status, err)
+		return
+	}
+
+	profileResponse := response.GetProfileResponse{
+		UserID:           profile.UserID,
+		Username:         profile.Username,
+		RegistrationDate: profile.RegistrationDate,
+		Image:            profile.Image,
+		StreakDays:       profile.StreakDays,
+		XPPoints:         profile.XPPoints,
+		WordsLearned:     profile.WordsLearned,
+		LessonsDone:      profile.LessonsDone,
+	}
+
+	err = utils.WriteJSONResponse(w, http.StatusOK, profileResponse)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+}
+
+func (h *ProfileHandler) handleGetMyProfile(w http.ResponseWriter, r *http.Request) {
+	payload := &request.GetProfileRequest{}
+
+	userID, err := utils.GetUserID(r)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+	payload.UserID = userID
+
+	if err = utils.ParseBodyAndValidate(r, payload); err != nil {
 		utils.WriteError(w, http.StatusBadRequest, err)
 		return
 	}
