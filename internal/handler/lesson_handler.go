@@ -90,7 +90,7 @@ func (h *LessonHandler) handleCompleteLesson(w http.ResponseWriter, r *http.Requ
 	lessonCompletion := &model.LessonCompletion{
 		UserID:        payload.UserID,
 		LessonID:      payload.LessonID,
-		DateCompleted: time.Now(),
+		DateCompleted: time.Now().UTC(),
 	}
 
 	err = h.completionService.CompleteLesson(lessonCompletion)

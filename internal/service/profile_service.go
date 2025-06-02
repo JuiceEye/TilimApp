@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
+	"tilimauth/internal/utils"
 	"time"
 )
 
@@ -50,7 +51,7 @@ func (s *ProfileService) GetProfile(userID int64) (profile *model.Profile, statu
 		UserID:           user.ID,
 		Username:         user.Username,
 		Image:            user.Image,
-		RegistrationDate: user.RegistrationDate,
+		RegistrationDate: utils.ToAppTZ(user.RegistrationDate),
 		StreakDays:       userProgress.StreakDays,
 		XPPoints:         userProgress.XPPoints,
 		WordsLearned:     userProgress.WordsLearned,
@@ -108,27 +109,30 @@ func (s *ProfileService) UpdateEmail(userID int64, newEmail string) error {
 	return s.userRepo.ChangeUserFields(userID, &model.User{Email: newEmail})
 }
 
-// func (s *ProfileService) ProcessStreakTx(tx *sql.Tx, userID int64, activityDate time.Time) error {
-// 	userProgress, err := s.userRepo.GetStreakTx(tx, userID)
-// 	if err != nil {
-// 		return err
-// 	}
-//
-// 	if streak.LastActivity.Equal(activityDate) {
-// 		return nil
-// 	}
-//
-// 	if streak.LastActivity.Equal(activityDate.AddDate(0, 0, -1)) {
-// 		streak.Current += 1
-// 	} else {
-// 		streak.Current = 1
-// 	}
-//
-// 	if streak.Current > streak.Longest {
-// 		streak.Longest = streak.Current
-// 	}
-//
-// 	streak.LastActivity = activityDate
-//
-// 	return r.SaveStreakTx(tx, userID, streak)
-// }
+func (s *ProfileService) ProcessStreakTx(tx *sql.Tx, userID int64, activityDate time.Time) error {
+	userProgress, err := s.userProgressRepo.GetUserProgressByUserIDTx(tx, userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			userProgress, err = s.userProgressRepo.CreateUserProgress(userID)
+			if err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+	}
+
+	if userProgress.LastLessonCompletedAt != nil && userProgress.LastLessonCompletedAt.Equal(activityDate) {
+		return nil
+	}
+
+	if userProgress.LastLessonCompletedAt.Equal(activityDate.AddDate(0, 0, -1)) {
+		userProgress.StreakDays += 1
+	} else {
+		userProgress.StreakDays = 1
+	}
+
+	userProgress.LastLessonCompletedAt = &activityDate
+
+	return s.userProgressRepo.SaveStreakTx(tx, userID, userProgress)
+}

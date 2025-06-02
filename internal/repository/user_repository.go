@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"tilimauth/internal/model"
+	"time"
 )
 
 type UserRepository struct {
@@ -102,7 +103,7 @@ func (r *UserRepository) CreateUser(user *model.User) (*model.User, error) {
 		user.Password,
 		user.Email,
 		user.Image,
-		user.RegistrationDate,
+		user.RegistrationDate.UTC(),
 	).Scan(&user.ID)
 
 	if err != nil {
@@ -224,13 +225,13 @@ func (r *UserRepository) GetCredentialsByEmail(email string) (*UserCredentials, 
 }
 
 func (r *UserRepository) IncrementStatsTx(tx *sql.Tx, userID, xp int64) error {
-	query := `
-		UPDATE app.user_progress
-        SET xp_points = xp_points + $1, lessons_done = lessons_done + 1, updated_at = CURRENT_TIMESTAMP
-        WHERE user_id = $2
+	query :=
+		`UPDATE app.user_progress
+		SET xp_points = xp_points + $1, lessons_done = lessons_done + 1, last_lesson_completed_at = $2, updated_at = $2
+		WHERE user_id = $3
 	`
 
-	_, err := tx.Exec(query, xp, userID)
+	_, err := tx.Exec(query, xp, time.Now().UTC().Truncate(24*time.Hour), userID)
 	if err != nil {
 		return fmt.Errorf("failed to increment user progress: %w", err)
 	}

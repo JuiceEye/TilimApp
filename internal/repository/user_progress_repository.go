@@ -2,6 +2,8 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"tilimauth/internal/model"
 	"time"
 )
@@ -10,14 +12,21 @@ type UserProgressRepository struct {
 	db *sql.DB
 }
 
-type DBExecutor interface {
-	QueryRow(query string, args ...any) *sql.Row
-}
-
 func NewUserProgressRepo(db *sql.DB) *UserProgressRepository {
 	return &UserProgressRepository{
 		db: db,
 	}
+}
+
+type DBExecutor interface {
+	QueryRow(query string, args ...any) *sql.Row
+}
+
+func truncateOrNil(t *time.Time) interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.Truncate(24 * time.Hour)
 }
 
 func (r *UserProgressRepository) GetUserProgressByUserID(UserID int64) (*model.UserProgress, error) {
@@ -42,7 +51,7 @@ func (r *UserProgressRepository) getUserProgressByUserID(executor DBExecutor, Us
 		&up.LastStreakResetDate,
 	)
 
-	if err != nil {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return nil, err
 	}
 
@@ -61,7 +70,7 @@ func (r *UserProgressRepository) CreateUserProgress(UserID int64) (*model.UserPr
 		WordsLearned:          0,
 		LessonsDone:           0,
 		LastLessonCompletedAt: nil,
-		UpdatedAt:             time.Now(),
+		UpdatedAt:             time.Now().UTC(),
 		LastStreakResetDate:   nil,
 	}
 
@@ -69,7 +78,7 @@ func (r *UserProgressRepository) CreateUserProgress(UserID int64) (*model.UserPr
 		`INSERT INTO app.user_progress
 		(user_id, streak_days, xp_points, words_learned, lessons_done, last_lesson_completed_at, updated_at, last_streak_reset_date)
 		VALUES ($1::INTEGER, $2::INTEGER, $3::INTEGER, $4::INTEGER, $5::INTEGER, $6::TIMESTAMPTZ, $7::TIMESTAMPTZ, $8::DATE)`,
-		up.UserID, up.StreakDays, up.XPPoints, up.WordsLearned, up.LessonsDone, up.LastLessonCompletedAt.Truncate(24*time.Hour), up.UpdatedAt, up.LastStreakResetDate.Truncate(24*time.Hour),
+		up.UserID, up.StreakDays, up.XPPoints, up.WordsLearned, up.LessonsDone, truncateOrNil(up.LastLessonCompletedAt), up.UpdatedAt, truncateOrNil(up.LastStreakResetDate),
 	)
 
 	if err != nil {
@@ -77,4 +86,21 @@ func (r *UserProgressRepository) CreateUserProgress(UserID int64) (*model.UserPr
 	}
 
 	return up, nil
+}
+
+func (r *UserProgressRepository) SaveStreakTx(tx *sql.Tx, userID int64, up *model.UserProgress) error {
+	fmt.Println("saving streak!")
+	query :=
+		`UPDATE app.user_progress
+		SET streak_days = $1
+		WHERE user_id = $3
+	`
+
+	_, err := tx.Exec(query, up.StreakDays, userID)
+
+	if err != nil {
+		return fmt.Errorf("failed to save user streak: %w", err)
+	}
+
+	return nil
 }

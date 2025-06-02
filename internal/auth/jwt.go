@@ -38,7 +38,7 @@ func GenerateAccessToken(resp http.ResponseWriter, userID int64) (string, error)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id":    strconv.FormatInt(userID, 10),
-		"expiredAt":  time.Now().Add(expiration).Unix(),
+		"expiredAt":  time.Now().UTC().Add(expiration).Unix(),
 		"token_type": "access",
 	})
 
@@ -58,7 +58,7 @@ func GenerateRefreshToken(resp http.ResponseWriter, userID int64) (string, error
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id":    strconv.FormatInt(userID, 10),
-		"expiredAt":  time.Now().Add(expiration).Unix(),
+		"expiredAt":  time.Now().UTC().Add(expiration).Unix(),
 		"token_type": "refresh",
 	})
 
