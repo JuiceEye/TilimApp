@@ -12,4 +12,5 @@ type UserProgress struct {
 	LessonsDone           int
 	LastLessonCompletedAt *time.Time
 	UpdatedAt             time.Time
+	LastStreakResetDate   *time.Time
 }
