@@ -109,6 +109,29 @@ func (s *ProfileService) UpdateEmail(userID int64, newEmail string) error {
 	return s.userRepo.ChangeUserFields(userID, &model.User{Email: newEmail})
 }
 
+func (s *ProfileService) UpdatePassword(userID int64, oldPassword, newPassword string) error {
+	hashedPassword, err := s.userRepo.GetUserPasswordByID(userID)
+	if err != nil {
+		return err
+	}
+
+	if err := utils.ComparePassword(hashedPassword, oldPassword); err != nil {
+		return &BadRequestError{Msg: "неверный пароль"}
+	}
+
+	if oldPassword == newPassword {
+		return &BadRequestError{Msg: "пароль должен отличаться от старого"}
+	}
+
+	newHashedPassword, err := utils.HashPassword(newPassword)
+	if err != nil {
+		return fmt.Errorf("не удалось захешировать новый пароль: %w", err)
+	}
+
+	return s.userRepo.ChangeUserFields(userID, &model.User{Password: newHashedPassword})
+
+}
+
 func (s *ProfileService) ProcessStreakTx(tx *sql.Tx, userID int64, activityDate time.Time) error {
 	userProgress, err := s.userProgressRepo.GetUserProgressByUserIDTx(tx, userID)
 	if err != nil {
