@@ -51,3 +51,16 @@ func (req *UpdateEmailRequest) ValidateRequest() (err error) {
 
 	return nil
 }
+
+type UpdatePasswordRequest struct {
+	Password    string `json:"password" validate:"required"`
+	NewPassword string `json:"new_password" validate:"required"`
+}
+
+func (req *UpdatePasswordRequest) ValidateRequest() (err error) {
+	if req.Password == "" {
+		return fmt.Errorf("отсутствуют обязательные параметры: [password, new_password]")
+	}
+
+	return nil
+}
