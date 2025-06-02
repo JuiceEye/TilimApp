@@ -28,6 +28,7 @@ func (h *ProfileHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("PATCH /profile/avatar", h.handleUpdateProfilePicture)
 	router.HandleFunc("PATCH /profile/username", h.handleUpdateUsername)
 	router.HandleFunc("PATCH /profile/email", h.handleUpdateEmail)
+	router.HandleFunc("PATCH /profile/password", h.handleUpdatePassword)
 }
 
 func (h *ProfileHandler) handleGetProfile(w http.ResponseWriter, r *http.Request) {
@@ -202,6 +203,39 @@ func (h *ProfileHandler) handleUpdateEmail(w http.ResponseWriter, r *http.Reques
 
 	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]int64{"user_id": userID})
 	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+}
+
+func (h *ProfileHandler) handleUpdatePassword(w http.ResponseWriter, r *http.Request) {
+	payload := &request.UpdatePasswordRequest{}
+
+	if err := utils.ParseBodyAndValidate(r, payload); err != nil {
+		utils.WriteError(w, http.StatusBadRequest, err)
+		return
+	}
+
+	userID, err := utils.GetUserID(r)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	err = h.service.UpdatePassword(userID, payload.Password, payload.NewPassword)
+	if err != nil {
+		var bre *service.BadRequestError
+		if errors.As(err, &bre) {
+			utils.WriteError(w, http.StatusBadRequest, err)
+		} else if errors.Is(err, repository.ErrNotFound) {
+			utils.WriteError(w, http.StatusNotFound, err)
+		} else {
+			utils.WriteError(w, http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	if err := utils.WriteJSONResponse(w, http.StatusOK, map[string]int64{"user_id": userID}); err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
