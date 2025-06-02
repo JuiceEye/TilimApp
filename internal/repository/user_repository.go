@@ -95,6 +95,18 @@ func (r *UserRepository) GetUserByUsername(username string) (*model.User, error)
 	return u, nil
 }
 
+func (r *UserRepository) GetUserPasswordByID(userID int64) (string, error) {
+	var password string
+	err := r.db.QueryRow("SELECT password FROM auth.users WHERE id = $1", userID).Scan(&password)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", ErrNotFound
+		}
+		return "", err
+	}
+	return password, nil
+}
+
 func (r *UserRepository) CreateUser(user *model.User) (*model.User, error) {
 	err := r.db.QueryRow(
 		`INSERT INTO auth.users (username, password, email, image, registration_date) 
