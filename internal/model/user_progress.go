@@ -11,6 +11,5 @@ type UserProgress struct {
 	WordsLearned          int
 	LessonsDone           int
 	LastLessonCompletedAt *time.Time
-	CreatedAt             time.Time
 	UpdatedAt             time.Time
 }

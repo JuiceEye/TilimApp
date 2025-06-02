@@ -49,15 +49,14 @@ func (r *UserProgressRepository) CreateUserProgress(UserID int64) (*model.UserPr
 		WordsLearned:          0,
 		LessonsDone:           0,
 		LastLessonCompletedAt: nil,
-		CreatedAt:             time.Now(),
 		UpdatedAt:             time.Now(),
 	}
 
 	_, err := r.db.Exec(
 		`INSERT INTO app.user_progress
-		(user_id, streak_days, xp_points, words_learned, lessons_done, last_lesson_completed_at, created_at, updated_at)
-		VALUES ($1::INTEGER, $2::INTEGER, $3::INTEGER, $4::INTEGER, $5::INTEGER, $6::TIMESTAMPTZ, $7::TIMESTAMPTZ, $8::TIMESTAMPTZ)`,
-		up.UserID, up.StreakDays, up.XPPoints, up.WordsLearned, up.LessonsDone, up.LastLessonCompletedAt, up.CreatedAt, up.UpdatedAt,
+		(user_id, streak_days, xp_points, words_learned, lessons_done, last_lesson_completed_at, updated_at)
+		VALUES ($1::INTEGER, $2::INTEGER, $3::INTEGER, $4::INTEGER, $5::INTEGER, $6::TIMESTAMPTZ, $7::TIMESTAMPTZ)`,
+		up.UserID, up.StreakDays, up.XPPoints, up.WordsLearned, up.LessonsDone, up.LastLessonCompletedAt, up.UpdatedAt,
 	)
 
 	if err != nil {
@@ -77,7 +76,6 @@ func scanRowIntoUserProgress(rows *sql.Rows) (*model.UserProgress, error) {
 		&userProgress.WordsLearned,
 		&userProgress.LessonsDone,
 		&userProgress.LastLessonCompletedAt,
-		&userProgress.CreatedAt,
 		&userProgress.UpdatedAt,
 	)
 
