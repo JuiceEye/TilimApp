@@ -69,7 +69,7 @@ func (r *UserProgressRepository) CreateUserProgress(UserID int64) (*model.UserPr
 		`INSERT INTO app.user_progress
 		(user_id, streak_days, xp_points, words_learned, lessons_done, last_lesson_completed_at, updated_at, last_streak_reset_date)
 		VALUES ($1::INTEGER, $2::INTEGER, $3::INTEGER, $4::INTEGER, $5::INTEGER, $6::TIMESTAMPTZ, $7::TIMESTAMPTZ, $8::DATE)`,
-		up.UserID, up.StreakDays, up.XPPoints, up.WordsLearned, up.LessonsDone, up.LastLessonCompletedAt, up.UpdatedAt, up.LastStreakResetDate,
+		up.UserID, up.StreakDays, up.XPPoints, up.WordsLearned, up.LessonsDone, up.LastLessonCompletedAt.Truncate(24*time.Hour), up.UpdatedAt, up.LastStreakResetDate.Truncate(24*time.Hour),
 	)
 
 	if err != nil {
