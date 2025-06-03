@@ -145,13 +145,12 @@ func (s *ProfileService) ProcessStreakTx(tx *sql.Tx, userID int64, activityDate 
 		}
 	}
 
-	if userProgress.LastLessonCompletedAt != nil && userProgress.LastLessonCompletedAt.Equal(activityDate) {
+	switch {
+	case userProgress.LastLessonCompletedAt != nil && userProgress.LastLessonCompletedAt.Equal(activityDate):
 		return nil
-	}
-
-	if userProgress.LastLessonCompletedAt.Equal(activityDate.AddDate(0, 0, -1)) {
+	case userProgress.LastLessonCompletedAt != nil && userProgress.LastLessonCompletedAt.Equal(activityDate.AddDate(0, 0, -1)):
 		userProgress.StreakDays += 1
-	} else {
+	default:
 		userProgress.StreakDays = 1
 	}
 
