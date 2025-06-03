@@ -239,7 +239,7 @@ func (r *UserRepository) GetCredentialsByEmail(email string) (*UserCredentials, 
 func (r *UserRepository) IncrementStatsTx(tx *sql.Tx, userID, xp int64) error {
 	query :=
 		`UPDATE app.user_progress
-		SET xp_points = xp_points + $1, lessons_done = lessons_done + 1, last_lesson_completed_at = $2, updated_at = $2
+		SET xp_points = xp_points + $1, lessons_done = lessons_done + 1, updated_at = $2
 		WHERE user_id = $3
 	`
 

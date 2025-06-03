@@ -40,7 +40,13 @@ func (r *UserProgressRepository) GetUserProgressByUserIDTx(tx *sql.Tx, UserID in
 func (r *UserProgressRepository) getUserProgressByUserID(executor DBExecutor, UserID int64) (*model.UserProgress, error) {
 	up := &model.UserProgress{}
 
-	err := executor.QueryRow("SELECT * FROM app.user_progress WHERE user_id = $1::INTEGER", UserID).Scan(
+	err := executor.QueryRow(
+		"SELECT user_id, streak_days, xp_points, words_learned, lessons_done, "+
+			"last_lesson_completed_at, updated_at, last_streak_reset_date "+
+			"FROM app.user_progress "+
+			"WHERE user_id = $1::INTEGER",
+		UserID,
+	).Scan(
 		&up.UserID,
 		&up.StreakDays,
 		&up.XPPoints,
@@ -89,14 +95,14 @@ func (r *UserProgressRepository) CreateUserProgress(UserID int64) (*model.UserPr
 }
 
 func (r *UserProgressRepository) SaveStreakTx(tx *sql.Tx, userID int64, up *model.UserProgress) error {
-	fmt.Println("saving streak!")
-	query :=
-		`UPDATE app.user_progress
-		SET streak_days = $1
+	query := `
+		UPDATE app.user_progress SET 
+        	streak_days = $1,
+			last_lesson_completed_at = $2
 		WHERE user_id = $3
 	`
 
-	_, err := tx.Exec(query, up.StreakDays, userID)
+	_, err := tx.Exec(query, up.StreakDays, up.LastLessonCompletedAt, userID)
 
 	if err != nil {
 		return fmt.Errorf("failed to save user streak: %w", err)
