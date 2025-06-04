@@ -24,8 +24,8 @@ func NewLessonService(
 	}
 }
 
-func (s *LessonService) GetLessonByID(LessonID int64) (*model.Lesson, error) {
-	lesson, err := s.lessonRepo.GetByID(LessonID)
+func (s *LessonService) GetLessonByID(lessonID int64) (*model.Lesson, error) {
+	lesson, err := s.lessonRepo.GetByID(lessonID)
 	if err != nil {
 		return nil, err
 	}
