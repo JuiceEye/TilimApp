@@ -37,12 +37,9 @@ func (h *SubscriptionHandler) handleSubscriptionPurchase(w http.ResponseWriter, 
 		return
 	}
 
-	subscriptionID, err = h.service.BuySubscription(userID, payload.ExpiresAt)
+	subID, err := h.service.BuySubscription(userID, payload.ExpiresAt)
 	if err != nil {
-		var bre *service.BadRequestError
-		if errors.As(err, &bre) {
-			utils.WriteError(w, http.StatusBadRequest, err)
-		} else if errors.Is(err, repository.ErrNotFound) {
+		if errors.Is(err, repository.ErrNotFound) {
 			utils.WriteError(w, http.StatusNotFound, err)
 		} else {
 			utils.WriteError(w, http.StatusInternalServerError, err)
@@ -51,7 +48,7 @@ func (h *SubscriptionHandler) handleSubscriptionPurchase(w http.ResponseWriter, 
 		return
 	}
 
-	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]int64{"subscription_id": subscriptionID})
+	err = utils.WriteJSONResponse(w, http.StatusOK, map[string]int64{"subscription_id": subID})
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
