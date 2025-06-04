@@ -6,6 +6,7 @@ import (
 	"tilimauth/internal/auth"
 	"tilimauth/internal/dto/request"
 	"tilimauth/internal/dto/response"
+	"tilimauth/internal/middleware"
 	"tilimauth/internal/model"
 	"tilimauth/internal/service"
 	"tilimauth/internal/utils"
@@ -127,7 +128,7 @@ func (h *AuthHandler) handleLogin(w http.ResponseWriter, r *http.Request) {
 
 // только для получения аксесс токена, поэтому не хендлим защищённый маршрут как для аксесса
 func (h *AuthHandler) handleRefreshToken(w http.ResponseWriter, r *http.Request) {
-	userID, err := auth.VerifyTokens(r, "refresh")
+	userID, err := middleware.VerifyTokens(r, "refresh")
 	if err != nil {
 		utils.WriteError(w, http.StatusUnauthorized, err)
 		return
