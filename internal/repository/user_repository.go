@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"tilimauth/internal/model"
 	"time"
@@ -99,7 +100,7 @@ func (r *UserRepository) GetUserPasswordByID(userID int64) (string, error) {
 	var password string
 	err := r.db.QueryRow("SELECT password FROM auth.users WHERE id = $1", userID).Scan(&password)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return "", ErrNotFound
 		}
 		return "", err
