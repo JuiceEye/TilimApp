@@ -88,7 +88,7 @@ func VerifyTokens(request *http.Request, tokenType string /*tokenString string*/
 
 		tokenString = parts[1]
 	} else if tokenType == "refresh" {
-		refreshHeader := request.Header.Get("X-Refresh-Token")
+		refreshHeader := request.Header.Get("Refresh-Token")
 		if refreshHeader == "" {
 			return 0, fmt.Errorf("требуется заголовок (header) от refresh token")
 		}
