@@ -12,12 +12,12 @@ type SubscriptionService struct {
 }
 
 func NewSubscriptionService(
-	userRepo *repository.UserRepository,
 	subRepo *repository.SubscriptionRepository,
+	userRepo *repository.UserRepository,
 ) *SubscriptionService {
 	return &SubscriptionService{
-		userRepo: userRepo,
 		subRepo:  subRepo,
+		userRepo: userRepo,
 	}
 }
 
@@ -25,6 +25,15 @@ func (s *SubscriptionService) BuySubscription(userID int64, expiresAt time.Time)
 	_, err := s.userRepo.GetUserByID(userID)
 	if err != nil {
 		return 0, err
+	}
+
+	exists, err := s.subRepo.ExistsActive(userID)
+	if err != nil {
+		return 0, err
+	}
+
+	if exists {
+		return 0, &BadRequestError{Msg: "у пользователя уже есть подписка"}
 	}
 
 	sub := &model.Subscription{

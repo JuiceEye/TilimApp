@@ -59,6 +59,11 @@ func (s *Server) Run() error {
 	leaderboardsHandler := handler.NewLeaderboardsHandler(leaderboardsService)
 	leaderboardsHandler.RegisterRoutes(protectedRouter)
 
+	subRepo := repository.NewSubscriptionRepo(s.db)
+	subService := service.NewSubscriptionService(subRepo, userRepo)
+	subHandler := handler.NewSubscriptionHandler(subService)
+	subHandler.RegisterRoutes(protectedRouter)
+
 	deleteUserDlyaFrontov(publicRouter, s.db)
 
 	mainRouter := http.NewServeMux()

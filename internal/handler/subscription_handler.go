@@ -37,9 +37,14 @@ func (h *SubscriptionHandler) handleSubscriptionPurchase(w http.ResponseWriter, 
 		return
 	}
 
-	subID, err := h.service.BuySubscription(userID, payload.ExpiresAt)
+	expiresAt := payload.ExpiresAt.ToTime()
+
+	subID, err := h.service.BuySubscription(userID, expiresAt)
 	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
+		var bre *service.BadRequestError
+		if errors.As(err, &bre) {
+			utils.WriteError(w, http.StatusBadRequest, err)
+		} else if errors.Is(err, repository.ErrNotFound) {
 			utils.WriteError(w, http.StatusNotFound, err)
 		} else {
 			utils.WriteError(w, http.StatusInternalServerError, err)
