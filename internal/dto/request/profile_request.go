@@ -41,7 +41,8 @@ func (req *UpdateUsernameRequest) ValidateRequest() (err error) {
 }
 
 type UpdateEmailRequest struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func (req *UpdateEmailRequest) ValidateRequest() (err error) {
