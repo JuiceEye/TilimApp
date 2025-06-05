@@ -52,6 +52,7 @@ func (s *AuthService) Register(user model.User) (createdUser *model.User, status
 }
 
 func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int, error) {
+	var ErrInvalidCredentials = errors.New("неверные учетные данные")
 	var credentials *repository.UserCredentials
 	var err error
 
@@ -63,13 +64,13 @@ func (s *AuthService) Login(usernameOrEmail, password string) (*model.User, int,
 
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
-			return nil, http.StatusUnauthorized, fmt.Errorf("неверные учетные данные")
+			return nil, http.StatusUnauthorized, ErrInvalidCredentials
 		}
 		return nil, http.StatusInternalServerError, err
 	}
 
 	if err := utils.ComparePassword(credentials.HashedPassword, password); err != nil {
-		return nil, http.StatusUnauthorized, fmt.Errorf("неверные учетные данные")
+		return nil, http.StatusUnauthorized, ErrInvalidCredentials
 	}
 
 	user, err := s.userRepository.GetUserByID(credentials.ID)
