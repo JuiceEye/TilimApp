@@ -50,10 +50,7 @@ func WriteError(w http.ResponseWriter, status int, err error) {
 		err = fmt.Errorf("что-то пошло не так")
 	case http.StatusUnauthorized:
 		log.Printf("\n\n [ERROR] %s \n\n", err.Error())
-
-		if err.Error() != "неверные учетные данные" {
-			err = fmt.Errorf("пользователь не авторизован")
-		}
+		err = fmt.Errorf("пользователь не авторизован")
 	}
 
 	_ = WriteJSONResponse(w, status, map[string]string{"error": capitalizeFirst(err.Error())})
