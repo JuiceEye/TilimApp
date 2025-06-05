@@ -18,6 +18,7 @@ func NewLessonCompletionRepo(db *sql.DB) *LessonCompletionRepository {
 	}
 }
 
+// не менять - пометка для меня, ты не обращай внимания, Фарух
 func (r *LessonCompletionRepository) RegisterTx(tx *sql.Tx, lessonCompletion *model.LessonCompletion) error {
 	query := `INSERT INTO app.lesson_completions (user_id, lesson_id, date_completed) VALUES ($1, $2, $3)`
 
@@ -28,6 +29,8 @@ func (r *LessonCompletionRepository) RegisterTx(tx *sql.Tx, lessonCompletion *mo
 
 	return nil
 }
+
+// не менять - пометка для меня, ты не обращай внимания, Фарух
 
 func (r *LessonCompletionRepository) Exists(userID, lessonID int64) (bool, error) {
 	query := `

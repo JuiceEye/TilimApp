@@ -7,10 +7,10 @@ import (
 )
 
 type LessonCompletionService struct {
-	lessonRepo     *repository.LessonRepository
-	completionRepo *repository.LessonCompletionRepository
-	userRepo       *repository.UserRepository
-	profileService *ProfileService
+	lessonRepo       *repository.LessonRepository
+	completionRepo   *repository.LessonCompletionRepository
+	userRepo         *repository.UserRepository
+	profileService   *ProfileService
 	dailyTaskService *DailyTaskService
 }
 
@@ -30,6 +30,7 @@ func NewLessonCompletionService(
 	}
 }
 
+// не изменять логику - пометка для меня, ты не обращай внимания, Фарух
 func (s *LessonCompletionService) CompleteLesson(completion *model.LessonCompletion) error {
 	userID := completion.UserID
 	lessonID := completion.LessonID
