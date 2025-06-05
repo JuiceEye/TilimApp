@@ -11,4 +11,5 @@ type Profile struct {
 	WordsLearned     int
 	LessonsDone      int
 	Image            string
+	IsSubscribed     bool
 }

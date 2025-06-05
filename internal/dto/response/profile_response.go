@@ -11,4 +11,5 @@ type GetProfileResponse struct {
 	XPPoints         int64     `json:"xp_points"`
 	WordsLearned     int       `json:"words_learned"`
 	LessonsDone      int       `json:"lessons_done"`
+	IsSubscribed     bool      `json:"is_subscribed"`
 }
