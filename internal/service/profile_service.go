@@ -14,6 +14,7 @@ import (
 type ProfileService struct {
 	userRepo         *repository.UserRepository
 	userProgressRepo *repository.UserProgressRepository
+	subRepo          *repository.SubscriptionRepository
 }
 
 func NewProfileService(
@@ -47,6 +48,11 @@ func (s *ProfileService) GetProfile(userID int64) (profile *model.Profile, statu
 		}
 	}
 
+	isSubscribed, err := s.subRepo.ExistsActive(userID)
+	if err != nil {
+		return nil, http.StatusInternalServerError, err
+	}
+
 	profile = &model.Profile{
 		UserID:           user.ID,
 		Username:         user.Username,
@@ -56,6 +62,7 @@ func (s *ProfileService) GetProfile(userID int64) (profile *model.Profile, statu
 		XPPoints:         userProgress.XPPoints,
 		WordsLearned:     userProgress.WordsLearned,
 		LessonsDone:      userProgress.LessonsDone,
+		IsSubscribed:     isSubscribed,
 	}
 
 	return profile, http.StatusOK, nil

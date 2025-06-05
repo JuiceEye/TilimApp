@@ -100,6 +100,7 @@ func (h *ProfileHandler) handleGetMyProfile(w http.ResponseWriter, r *http.Reque
 		XPPoints:         profile.XPPoints,
 		WordsLearned:     profile.WordsLearned,
 		LessonsDone:      profile.LessonsDone,
+		IsSubscribed:     profile.IsSubscribed,
 	}
 
 	err = utils.WriteJSONResponse(w, http.StatusOK, profileResponse)
