@@ -96,7 +96,16 @@ func (s *ProfileService) UpdateUsername(userID int64, newUsername string) error 
 	return s.userRepo.ChangeUserFields(userID, &model.User{Username: newUsername})
 }
 
-func (s *ProfileService) UpdateEmail(userID int64, newEmail string) error {
+func (s *ProfileService) UpdateEmail(userID int64, newEmail string, password string) error {
+	hashedPassword, err := s.userRepo.GetUserPasswordByID(userID)
+	if err != nil {
+		return err
+	}
+
+	if err := utils.ComparePassword(hashedPassword, password); err != nil {
+		return &BadRequestError{Msg: "неверный пароль"}
+	}
+
 	currentUser, err := s.userRepo.GetUserByID(userID)
 	if err != nil {
 		return err

@@ -189,7 +189,7 @@ func (h *ProfileHandler) handleUpdateEmail(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = h.service.UpdateEmail(userID, payload.Email)
+	err = h.service.UpdateEmail(userID, payload.Email, payload.Password)
 	if err != nil {
 		var bre *service.BadRequestError
 		if errors.As(err, &bre) {
