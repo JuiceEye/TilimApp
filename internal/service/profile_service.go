@@ -20,10 +20,12 @@ type ProfileService struct {
 func NewProfileService(
 	userRepo *repository.UserRepository,
 	userProgressRepo *repository.UserProgressRepository,
+	subRepo *repository.SubscriptionRepository,
 ) *ProfileService {
 	return &ProfileService{
 		userRepo:         userRepo,
 		userProgressRepo: userProgressRepo,
+		subRepo:          subRepo,
 	}
 }
 

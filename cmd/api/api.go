@@ -36,7 +36,8 @@ func (s *Server) Run() error {
 	authHandler := handler.NewAuthHandler(userService)
 	authHandler.RegisterRoutes(publicRouter)
 
-	profileService := service.NewProfileService(userRepo, userProgressRepo)
+	subRepo := repository.NewSubscriptionRepo(s.db)
+	profileService := service.NewProfileService(userRepo, userProgressRepo, subRepo)
 	profileHandler := handler.NewProfileHandler(profileService)
 	profileHandler.RegisterRoutes(protectedRouter)
 
@@ -59,7 +60,6 @@ func (s *Server) Run() error {
 	leaderboardsHandler := handler.NewLeaderboardsHandler(leaderboardsService)
 	leaderboardsHandler.RegisterRoutes(protectedRouter)
 
-	subRepo := repository.NewSubscriptionRepo(s.db)
 	subService := service.NewSubscriptionService(subRepo, userRepo)
 	subHandler := handler.NewSubscriptionHandler(subService)
 	subHandler.RegisterRoutes(protectedRouter)
