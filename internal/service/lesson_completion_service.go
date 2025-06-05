@@ -11,6 +11,7 @@ type LessonCompletionService struct {
 	completionRepo *repository.LessonCompletionRepository
 	userRepo       *repository.UserRepository
 	profileService *ProfileService
+	dailyTaskService *DailyTaskService
 }
 
 func NewLessonCompletionService(
@@ -18,12 +19,14 @@ func NewLessonCompletionService(
 	completionRepo *repository.LessonCompletionRepository,
 	userRepo *repository.UserRepository,
 	profileService *ProfileService,
+	dailyTaskService *DailyTaskService,
 ) *LessonCompletionService {
 	return &LessonCompletionService{
-		lessonRepo:     lessonRepo,
-		completionRepo: completionRepo,
-		userRepo:       userRepo,
-		profileService: profileService,
+		lessonRepo:       lessonRepo,
+		completionRepo:   completionRepo,
+		userRepo:         userRepo,
+		profileService:   profileService,
+		dailyTaskService: dailyTaskService,
 	}
 }
 
@@ -61,6 +64,12 @@ func (s *LessonCompletionService) CompleteLesson(completion *model.LessonComplet
 	}
 
 	err = s.profileService.ProcessStreakTx(tx, userID, completion.DateCompleted.Truncate(24*time.Hour))
+	if err != nil {
+		return err
+	}
+
+	// Check if the completed lesson is a daily task and mark it as completed
+	err = s.dailyTaskService.CheckAndMarkTaskCompletedTx(tx, userID, lessonID, completion.DateCompleted)
 	if err != nil {
 		return err
 	}

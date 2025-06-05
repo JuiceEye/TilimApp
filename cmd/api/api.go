@@ -37,9 +37,14 @@ func (s *Server) Run() error {
 	authHandler.RegisterRoutes(publicRouter)
 
 	subRepo := repository.NewSubscriptionRepo(s.db)
+	dailyTaskRepo := repository.NewDailyTaskRepository(s.db)
+	dailyTaskService := service.NewDailyTaskService(dailyTaskRepo)
 	profileService := service.NewProfileService(userRepo, userProgressRepo, subRepo)
 	profileHandler := handler.NewProfileHandler(profileService)
 	profileHandler.RegisterRoutes(protectedRouter)
+
+	dailyTaskHandler := handler.NewDailyTaskHandler(dailyTaskService)
+	dailyTaskHandler.RegisterRoutes(protectedRouter)
 
 	moduleRepo := repository.NewModuleRepo(s.db)
 	sectionRepo := repository.NewSectionRepo(s.db)
@@ -52,7 +57,7 @@ func (s *Server) Run() error {
 	answerRepo := repository.NewAnswerRepo(s.db)
 	exerciseRepo := repository.NewExerciseRepo(s.db)
 	lessonService := service.NewLessonService(lessonRepo, exerciseRepo, answerRepo)
-	lessonCompletionService := service.NewLessonCompletionService(lessonRepo, lessonCompletionRepo, userRepo, profileService)
+	lessonCompletionService := service.NewLessonCompletionService(lessonRepo, lessonCompletionRepo, userRepo, profileService, dailyTaskService)
 	lessonHandler := handler.NewLessonHandler(lessonService, lessonCompletionService)
 	lessonHandler.RegisterRoutes(protectedRouter)
 
