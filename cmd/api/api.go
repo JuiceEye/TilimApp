@@ -90,7 +90,7 @@ func (s *Server) Run() error {
 	mainRouter.Handle("/auth/", http.StripPrefix("/auth", publicRouter))
 
 	log.Printf("[INFO] Starting server on %s...", s.address)
-	fmt.Println("***************************************************************************************************************************************")
+	fmt.Println("***********************************************************************************************************************************")
 
 	return http.ListenAndServe(s.address, standardChain(mainRouter))
 }
