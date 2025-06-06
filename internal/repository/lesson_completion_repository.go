@@ -62,4 +62,14 @@ func (r *LessonCompletionRepository) GetCompletedLessonIDs(userID int64, lessonI
 		var id int64
 		err = rows.Scan(&id)
 		if err != nil {
-			retur
+			return nil, fmt.Errorf("error fetching lesson completions: %w", err)
+		}
+		completedLessonIDs = append(completedLessonIDs, id)
+	}
+
+	if rows.Err() != nil {
+		return []int64{}, rows.Err()
+	}
+
+	return completedLessonIDs, nil
+}

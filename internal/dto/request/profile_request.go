@@ -60,4 +60,8 @@ type UpdatePasswordRequest struct {
 
 func (req *UpdatePasswordRequest) ValidateRequest() (err error) {
 	if req.Password == "" {
-		return fmt.Errorf("отсутствуют обязательные параметры: [passwo
+		return fmt.Errorf("отсутствуют обязательные параметры: [password, new_password]")
+	}
+
+	return nil
+}
