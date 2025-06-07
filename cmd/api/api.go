@@ -53,7 +53,7 @@ func (s *Server) Run() error {
 	sectionRepo := repository.NewSectionRepo(s.db)
 	lessonRepo := repository.NewLessonRepo(s.db)
 	lessonCompletionRepo := repository.NewLessonCompletionRepo(s.db)
-	moduleMainPageService := service.NewMainPageModuleService(moduleRepo, sectionRepo, lessonRepo, lessonCompletionRepo, redis)
+	moduleMainPageService := service.NewMainPageModuleService(moduleRepo, sectionRepo, lessonRepo, lessonCompletionRepo, s.redis) //добавила здесь s. перед redis, Фарух. ругалось на эту строгу при запуске
 	moduleMainPageHandler := handler.NewMainPageModuleHandler(moduleMainPageService)
 	moduleMainPageHandler.RegisterRoutes(protectedRouter)
 
