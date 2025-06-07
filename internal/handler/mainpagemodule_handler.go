@@ -27,6 +27,7 @@ func (h *ModuleHandler) RegisterRoutes(router *http.ServeMux) {
 
 func (h *ModuleHandler) handleGetMainPageModule(w http.ResponseWriter, r *http.Request) {
 	payload := request.GetMainPageModuleRequest{}
+	ctx := r.Context()
 
 	moduleID, err := strconv.ParseInt(r.PathValue("module_id"), 10, 64)
 	if err != nil {
@@ -46,7 +47,7 @@ func (h *ModuleHandler) handleGetMainPageModule(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	module, err := h.service.GetMainPageModuleByID(payload.ModuleID, userID)
+	module, err := h.service.GetMainPageModuleByID(ctx, payload.ModuleID, userID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			utils.WriteError(w, http.StatusNotFound, err)

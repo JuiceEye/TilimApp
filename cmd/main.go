@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"tilimauth/cmd/api"
+	"tilimauth/infrastructure"
 	"tilimauth/internal/config"
 	"tilimauth/internal/db"
 )
@@ -15,7 +16,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	server := api.NewServer("0.0.0.0:8080", dbase)
+	redis := infrastructure.NewRedisClient()
+
+	server := api.NewServer("0.0.0.0:8080", dbase, redis)
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
 	}

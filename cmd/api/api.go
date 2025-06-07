@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/redis/go-redis/v9"
 	"log"
 	"net/http"
 	"strconv"
@@ -16,12 +17,14 @@ import (
 type Server struct {
 	address string
 	db      *sql.DB
+	redis   *redis.Client
 }
 
-func NewServer(address string, db *sql.DB) *Server {
+func NewServer(address string, db *sql.DB, redis *redis.Client) *Server {
 	return &Server{
 		address: address,
 		db:      db,
+		redis:   redis,
 	}
 }
 
@@ -50,7 +53,7 @@ func (s *Server) Run() error {
 	sectionRepo := repository.NewSectionRepo(s.db)
 	lessonRepo := repository.NewLessonRepo(s.db)
 	lessonCompletionRepo := repository.NewLessonCompletionRepo(s.db)
-	moduleMainPageService := service.NewMainPageModuleService(moduleRepo, sectionRepo, lessonRepo, lessonCompletionRepo)
+	moduleMainPageService := service.NewMainPageModuleService(moduleRepo, sectionRepo, lessonRepo, lessonCompletionRepo, redis)
 	moduleMainPageHandler := handler.NewMainPageModuleHandler(moduleMainPageService)
 	moduleMainPageHandler.RegisterRoutes(protectedRouter)
 
