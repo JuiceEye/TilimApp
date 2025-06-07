@@ -31,7 +31,6 @@ func NewLessonHandler(
 func (h *LessonHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("GET /lessons/{lesson_id}", h.handleGetLesson)
 	router.HandleFunc("POST /lessons/{lesson_id}/complete", h.handleCompleteLesson)
-
 }
 
 func (h *LessonHandler) handleGetLesson(w http.ResponseWriter, r *http.Request) {
