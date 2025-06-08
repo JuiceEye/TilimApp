@@ -42,7 +42,6 @@ func (s *MainPageModuleService) GetMainPageModuleByID(ctx context.Context, modul
 	isCached := false
 
 	if err == nil {
-		fmt.Println("CACHED DATA SPOTTED")
 		if err := json.Unmarshal([]byte(cached), &module); err == nil {
 			isCached = true
 		}
@@ -80,7 +79,6 @@ func (s *MainPageModuleService) GetMainPageModuleByID(ctx context.Context, modul
 		module.Sections = sections
 
 		raw, _ := json.Marshal(module)
-		fmt.Println("saving cache...")
 		s.redis.Set(ctx, cacheKey, raw, time.Hour)
 	}
 
