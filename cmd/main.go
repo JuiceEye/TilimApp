@@ -18,7 +18,7 @@ func main() {
 
 	redis := infrastructure.NewRedisClient()
 
-	server := api.NewServer("0.0.0.0:8080", dbase, redis)
+	server := api.NewServer("127.0.0.1:8080", dbase, redis)
 	if err := server.Run(); err != nil {
 		log.Fatal(err)
 	}
