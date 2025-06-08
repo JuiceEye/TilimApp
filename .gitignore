@@ -2,4 +2,5 @@
 /.DS_Store
 .env
 /builds
+/cmd/build-all.ps1
 /cmd/build-all.sh
