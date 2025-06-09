@@ -16,8 +16,9 @@ func NewExerciseRepo(db *sql.DB) *ExerciseRepository {
 
 func (r *ExerciseRepository) GetByLessonID(lessonID int64) ([]model.Exercise, error) {
 	query := `
-		SELECT id, COALESCE(text, ''), COALESCE(image, ''), question_text
-		FROM app.exercises
+		SELECT e.id, et.code AS type_code, COALESCE(e.text, ''), COALESCE(e.image, ''), e.question_text
+		FROM app.exercises e
+		INNER JOIN dict.exercise_types et ON e.type_id = et.id
 		WHERE lesson_id = $1
 	`
 
@@ -30,7 +31,7 @@ func (r *ExerciseRepository) GetByLessonID(lessonID int64) ([]model.Exercise, er
 	var exercises []model.Exercise
 	for rows.Next() {
 		var exercise model.Exercise
-		if err := rows.Scan(&exercise.ID, &exercise.Text, &exercise.Image, &exercise.QuestionText); err != nil {
+		if err := rows.Scan(&exercise.ID, &exercise.TypeCode, &exercise.Text, &exercise.Image, &exercise.QuestionText); err != nil {
 			return nil, fmt.Errorf("error scanning section row: %w", err)
 		}
 		exercises = append(exercises, exercise)
