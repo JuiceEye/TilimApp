@@ -16,7 +16,7 @@ func NewExerciseRepo(db *sql.DB) *ExerciseRepository {
 
 func (r *ExerciseRepository) GetByLessonID(lessonID int64) ([]model.Exercise, error) {
 	query := `
-		SELECT e.id, et.code AS type_code, COALESCE(e.text, ''), COALESCE(e.image, ''), e.question_text
+		SELECT e.id, et.code AS type_code, COALESCE(e.text, ''), COALESCE(e.image, ''), COALESCE(e.question_text, '')
 		FROM app.exercises e
 		INNER JOIN dict.exercise_types et ON e.type_id = et.id
 		WHERE lesson_id = $1

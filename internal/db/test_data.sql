@@ -89,3 +89,20 @@ DELETE FROM app.user_achievements WHERE user_id = 9999;
 -- 6. Verify achievements are processed correctly in transactions:
 --    - Simulate a transaction failure after achievement processing
 --    - Verify the achievements are not granted if the transaction fails
+
+
+insert into dict.exercise_types VALUES (3, 'shuffle', 'Собери предложение')
+
+select * from dict.exercise_types
+INSERT INTO app.lessons (id, title, xp, section_id)
+VALUES
+    (17, 'Всем урокам урок', 300, 2)
+INSERT INTO app.exercises (id, lesson_id, type_id, text, image, question_text)
+VALUES (6, 17, 3, 'Салем|менин|атым|Данияр', null, null);
+
+    select * from app.exercises;
+
+insert into app.answers (id, exercise_id, text, image, is_correct)
+VALUES (18, 6, 'Салем|менин|атым|Данияр', null, true)
+
+select * from app.answers order by id desc
