@@ -251,3 +251,18 @@ func (r *UserRepository) IncrementStatsTx(tx *sql.Tx, userID, xp int64) error {
 
 	return nil
 }
+
+func (r *UserRepository) AddXP(userID, xp int64) error {
+	query :=
+		`UPDATE app.user_progress
+		SET xp_points = xp_points + $1, updated_at = $2
+		WHERE user_id = $3
+	`
+
+	_, err := r.db.Exec(query, xp, time.Now().UTC().Truncate(24*time.Hour), userID)
+	if err != nil {
+		return fmt.Errorf("failed to add xp: %w", err)
+	}
+
+	return nil
+}

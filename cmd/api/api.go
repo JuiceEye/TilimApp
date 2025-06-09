@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"tilimauth/internal/achievement"
 	"tilimauth/internal/handler"
 	"tilimauth/internal/middleware"
 	"tilimauth/internal/repository"
@@ -41,8 +42,16 @@ func (s *Server) Run() error {
 
 	subRepo := repository.NewSubscriptionRepo(s.db)
 	dailyTaskRepo := repository.NewDailyTaskRepository(s.db)
+	achievementRepo := repository.NewAchievementRepository(s.db)
+
+	// Initialize achievement service
+	achievementService := achievement.NewAchievementService(achievementRepo, userRepo)
+
+	// Register default achievements
+	achievement.CreateDefaultAchievements(achievementService, achievementRepo, userRepo)
+
 	dailyTaskService := service.NewDailyTaskService(dailyTaskRepo)
-	profileService := service.NewProfileService(userRepo, userProgressRepo, subRepo)
+	profileService := service.NewProfileService(userRepo, userProgressRepo, subRepo, achievementService)
 	profileHandler := handler.NewProfileHandler(profileService)
 	profileHandler.RegisterRoutes(protectedRouter)
 
@@ -60,7 +69,7 @@ func (s *Server) Run() error {
 	answerRepo := repository.NewAnswerRepo(s.db)
 	exerciseRepo := repository.NewExerciseRepo(s.db)
 	lessonService := service.NewLessonService(lessonRepo, exerciseRepo, answerRepo)
-	lessonCompletionService := service.NewLessonCompletionService(lessonRepo, lessonCompletionRepo, userRepo, profileService, dailyTaskService)
+	lessonCompletionService := service.NewLessonCompletionService(lessonRepo, lessonCompletionRepo, userRepo, profileService, dailyTaskService, achievementService)
 	lessonHandler := handler.NewLessonHandler(lessonService, lessonCompletionService)
 	lessonHandler.RegisterRoutes(protectedRouter)
 

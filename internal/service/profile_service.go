@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"tilimauth/internal/achievement"
 	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
 	"tilimauth/internal/utils"
@@ -12,20 +13,23 @@ import (
 )
 
 type ProfileService struct {
-	userRepo         *repository.UserRepository
-	userProgressRepo *repository.UserProgressRepository
-	subRepo          *repository.SubscriptionRepository
+	userRepo           *repository.UserRepository
+	userProgressRepo   *repository.UserProgressRepository
+	subRepo            *repository.SubscriptionRepository
+	achievementService *achievement.AchievementService
 }
 
 func NewProfileService(
 	userRepo *repository.UserRepository,
 	userProgressRepo *repository.UserProgressRepository,
 	subRepo *repository.SubscriptionRepository,
+	achievementService *achievement.AchievementService,
 ) *ProfileService {
 	return &ProfileService{
-		userRepo:         userRepo,
-		userProgressRepo: userProgressRepo,
-		subRepo:          subRepo,
+		userRepo:           userRepo,
+		userProgressRepo:   userProgressRepo,
+		subRepo:            subRepo,
+		achievementService: achievementService,
 	}
 }
 
@@ -150,22 +154,24 @@ func (s *ProfileService) UpdatePassword(userID int64, oldPassword, newPassword s
 
 }
 
-func (s *ProfileService) ProcessStreakTx(tx *sql.Tx, userID int64, activityDate time.Time) error {
+func (s *ProfileService) ProcessStreakTx(tx *sql.Tx, userID int64, activityDate time.Time) (int, bool, error) {
 	userProgress, err := s.userProgressRepo.GetUserProgressByUserIDTx(tx, userID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			userProgress, err = s.userProgressRepo.CreateUserProgress(userID)
 			if err != nil {
-				return err
+				return 0, false, err
 			}
 		} else {
-			return err
+			return 0, false, err
 		}
 	}
 
+	oldStreakDays := userProgress.StreakDays
+
 	switch {
 	case userProgress.LastLessonCompletedAt != nil && userProgress.LastLessonCompletedAt.Equal(activityDate):
-		return nil
+		return 0, false, nil
 	case userProgress.LastLessonCompletedAt != nil && userProgress.LastLessonCompletedAt.Equal(activityDate.AddDate(0, 0, -1)):
 		userProgress.StreakDays += 1
 	default:
@@ -174,5 +180,13 @@ func (s *ProfileService) ProcessStreakTx(tx *sql.Tx, userID int64, activityDate 
 
 	userProgress.LastLessonCompletedAt = &activityDate
 
-	return s.userProgressRepo.SaveStreakTx(tx, userID, userProgress)
+	// Save the updated streak
+	err = s.userProgressRepo.SaveStreakTx(tx, userID, userProgress)
+	if err != nil {
+		return 0, false, err
+	}
+
+	changed := userProgress.StreakDays != oldStreakDays
+
+	return userProgress.StreakDays, changed, nil
 }

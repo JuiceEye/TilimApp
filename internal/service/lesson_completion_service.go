@@ -1,17 +1,19 @@
 package service
 
 import (
+	"tilimauth/internal/achievement"
 	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
 	"time"
 )
 
 type LessonCompletionService struct {
-	lessonRepo       *repository.LessonRepository
-	completionRepo   *repository.LessonCompletionRepository
-	userRepo         *repository.UserRepository
-	profileService   *ProfileService
-	dailyTaskService *DailyTaskService
+	lessonRepo         *repository.LessonRepository
+	completionRepo     *repository.LessonCompletionRepository
+	userRepo           *repository.UserRepository
+	profileService     *ProfileService
+	dailyTaskService   *DailyTaskService
+	achievementService *achievement.AchievementService
 }
 
 func NewLessonCompletionService(
@@ -20,13 +22,15 @@ func NewLessonCompletionService(
 	userRepo *repository.UserRepository,
 	profileService *ProfileService,
 	dailyTaskService *DailyTaskService,
+	achievementService *achievement.AchievementService,
 ) *LessonCompletionService {
 	return &LessonCompletionService{
-		lessonRepo:       lessonRepo,
-		completionRepo:   completionRepo,
-		userRepo:         userRepo,
-		profileService:   profileService,
-		dailyTaskService: dailyTaskService,
+		lessonRepo:         lessonRepo,
+		completionRepo:     completionRepo,
+		userRepo:           userRepo,
+		profileService:     profileService,
+		dailyTaskService:   dailyTaskService,
+		achievementService: achievementService,
 	}
 }
 
@@ -64,7 +68,7 @@ func (s *LessonCompletionService) CompleteLesson(completion *model.LessonComplet
 		return err
 	}
 
-	err = s.profileService.ProcessStreakTx(tx, userID, completion.DateCompleted.Truncate(24*time.Hour))
+	streakDays, streakChanged, err := s.profileService.ProcessStreakTx(tx, userID, completion.DateCompleted.Truncate(24*time.Hour))
 	if err != nil {
 		return err
 	}
@@ -75,7 +79,34 @@ func (s *LessonCompletionService) CompleteLesson(completion *model.LessonComplet
 		return err
 	}
 
-	return tx.Commit()
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
+	// Process achievements for lesson completion
+	eventCtx := achievement.EventContext{
+		UserID:    userID,
+		EventType: achievement.EventLessonCompleted,
+		Payload: map[string]interface{}{
+			"lesson_id":      lessonID,
+			"date_completed": completion.DateCompleted,
+		},
+	}
+	err = s.achievementService.Process(eventCtx)
+	if err != nil {
+		return err
+	}
+
+	if streakChanged {
+		_ = s.achievementService.Process(achievement.EventContext{
+			UserID:    userID,
+			EventType: achievement.EventStreakUpdated,
+			Payload:   map[string]interface{}{"streak_days": streakDays},
+		})
+	}
+
+	return nil
 }
 
 func (s *LessonCompletionService) GetUserActivity(userID int64) ([]repository.UserActivity, error) {
