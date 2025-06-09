@@ -108,17 +108,3 @@ func (s *LessonCompletionService) CompleteLesson(completion *model.LessonComplet
 
 	return nil
 }
-
-func (s *LessonCompletionService) GetUserActivity(userID int64) ([]repository.UserActivity, error) {
-	now := time.Now().UTC()
-
-	startDate := now.AddDate(-1, 0, 0)
-	startDate = time.Date(startDate.Year(), startDate.Month(), startDate.Day(), 0, 0, 0, 0, time.UTC)
-	endDate := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, time.UTC)
-
-	return s.completionRepo.GetUserActivity(userID, startDate, endDate)
-}
-
-func isLeapYear(year int) bool {
-	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
-}

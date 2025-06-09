@@ -110,3 +110,46 @@ func (r *UserProgressRepository) SaveStreakTx(tx *sql.Tx, userID int64, up *mode
 
 	return nil
 }
+
+func (r *UserProgressRepository) GetUserActivity(userID int64, startDate, endDate time.Time) ([]UserActivity, error) {
+	now := time.Now().UTC()
+	startDate = now.AddDate(-1, 0, 0)
+	endDate = now.AddDate(0, 0, 1)
+
+	query := `
+        SELECT DATE(last_lesson_completed_at) AS activity_date, COUNT(*) as lessons_count FROM app.user_progress 
+        WHERE user_id = $1 
+            AND last_lesson_completed_at >= $2 
+            AND last_lesson_completed_at < $3
+        GROUP BY DATE(last_lesson_completed_at)
+        ORDER BY activity_date ASC
+    `
+
+	rows, err := r.db.Query(query, userID, startDate, endDate)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching user activity: %w", err)
+	}
+	defer rows.Close()
+
+	var userActivity []UserActivity
+	for rows.Next() {
+		var dateCompleted time.Time
+		var lessonsCount int64
+
+		err = rows.Scan(&dateCompleted, &lessonsCount)
+		if err != nil {
+			return nil, fmt.Errorf("error fetching user activity: %w", err)
+		}
+
+		userActivity = append(userActivity, UserActivity{
+			Date:             dateCompleted.Format("2006-01-02"),
+			LessonsCompleted: lessonsCount,
+		})
+	}
+
+	if rows.Err() != nil {
+		return nil, fmt.Errorf("error fetching user activity: %w", rows.Err())
+	}
+
+	return userActivity, nil
+}

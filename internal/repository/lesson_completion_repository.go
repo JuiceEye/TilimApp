@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/lib/pq"
 	"tilimauth/internal/model"
-	"time"
 )
 
 type LessonCompletionRepository struct {
@@ -78,47 +77,4 @@ func (r *LessonCompletionRepository) GetCompletedLessonIDs(userID int64, lessonI
 	}
 
 	return completedLessonIDs, nil
-}
-
-func (r *LessonCompletionRepository) GetUserActivity(userID int64, startDate, endDate time.Time) ([]UserActivity, error) {
-	now := time.Now().UTC()
-	startDate = now.AddDate(-1, 0, 0)
-	endDate = now.AddDate(0, 0, 1)
-
-	query := `
-        SELECT DATE(date_completed) AS activity_date, COUNT(*) as lessons_count FROM app.lesson_completions 
-        WHERE user_id = $1 
-            AND date_completed >= $2 
-            AND date_completed < $3
-        GROUP BY DATE(date_completed)
-        ORDER BY completion_date ASC
-    `
-
-	rows, err := r.db.Query(query, userID, startDate, endDate)
-	if err != nil {
-		return nil, fmt.Errorf("error fetching user activity: %w", err)
-	}
-	defer rows.Close()
-
-	var userActivity []UserActivity
-	for rows.Next() {
-		var dateCompleted time.Time
-		var lessonsCount int64
-
-		err = rows.Scan(&dateCompleted, &lessonsCount)
-		if err != nil {
-			return nil, fmt.Errorf("error fetching user activity: %w", err)
-		}
-
-		userActivity = append(userActivity, UserActivity{
-			Date:             dateCompleted.Format("2006-01-02"),
-			LessonsCompleted: lessonsCount,
-		})
-	}
-
-	if rows.Err() != nil {
-		return nil, fmt.Errorf("error fetching user activity: %w", rows.Err())
-	}
-
-	return userActivity, nil
 }
