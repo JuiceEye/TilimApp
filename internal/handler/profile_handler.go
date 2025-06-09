@@ -29,6 +29,7 @@ func (h *ProfileHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("PATCH /profile/username", h.handleUpdateUsername)
 	router.HandleFunc("PATCH /profile/email", h.handleUpdateEmail)
 	router.HandleFunc("PATCH /profile/password", h.handleUpdatePassword)
+	router.HandleFunc("GET /profile/activity", h.handleGetUserActivity)
 }
 
 func (h *ProfileHandler) handleGetProfile(w http.ResponseWriter, r *http.Request) {
@@ -237,6 +238,26 @@ func (h *ProfileHandler) handleUpdatePassword(w http.ResponseWriter, r *http.Req
 	}
 
 	if err := utils.WriteJSONResponse(w, http.StatusOK, map[string]int64{"user_id": userID}); err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+}
+
+func (h *ProfileHandler) handleGetUserActivity(w http.ResponseWriter, r *http.Request) {
+	userID, err := utils.GetUserID(r)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	activity, err := h.service.GetUserActivity(userID)
+	if err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	err = utils.WriteJSONResponse(w, http.StatusOK, activity)
+	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
