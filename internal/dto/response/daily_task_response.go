@@ -1,11 +1,10 @@
 package response
 
 import (
-	"time"
 	"tilimauth/internal/model"
+	"time"
 )
 
-// GetDailyTaskResponse represents a daily task response
 type GetDailyTaskResponse struct {
 	ID          int64      `json:"id"`
 	Title       string     `json:"title"`
@@ -16,7 +15,6 @@ type GetDailyTaskResponse struct {
 	CompletedAt *time.Time `json:"completed_at,omitempty"`
 }
 
-// ToDailyTaskResponseList converts a list of UserDailyTask models to a list of GetDailyTaskResponse DTOs
 func ToDailyTaskResponseList(tasks []model.UserDailyTask) []GetDailyTaskResponse {
 	var responses []GetDailyTaskResponse
 	for _, task := range tasks {

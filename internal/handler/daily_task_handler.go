@@ -21,7 +21,6 @@ func (h *DailyTaskHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("GET /daily-tasks", h.handleGetDailyTasks)
 }
 
-// handleGetDailyTasks handles the request to get daily tasks for the current user
 func (h *DailyTaskHandler) handleGetDailyTasks(w http.ResponseWriter, r *http.Request) {
 	userID, err := utils.GetUserID(r)
 	if err != nil {

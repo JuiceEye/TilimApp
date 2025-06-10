@@ -73,7 +73,6 @@ func (s *LessonCompletionService) CompleteLesson(completion *model.LessonComplet
 		return err
 	}
 
-	// Check if the completed lesson is a daily task and mark it as completed
 	err = s.dailyTaskService.CheckAndMarkTaskCompletedTx(tx, userID, lessonID, completion.DateCompleted)
 	if err != nil {
 		return err
@@ -84,7 +83,6 @@ func (s *LessonCompletionService) CompleteLesson(completion *model.LessonComplet
 		return err
 	}
 
-	// Process achievements for lesson completion
 	eventCtx := achievement.EventContext{
 		UserID:    userID,
 		EventType: achievement.EventLessonCompleted,

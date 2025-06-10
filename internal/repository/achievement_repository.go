@@ -18,7 +18,6 @@ func NewAchievementRepository(db *sql.DB) *AchievementRepository {
 	}
 }
 
-// GetAllAchievements retrieves all achievements from the database
 func (r *AchievementRepository) GetAllAchievements() ([]model.Achievement, error) {
 	query := `SELECT id, code, name, description, xp_reward, created_at FROM app.achievements`
 
@@ -52,7 +51,6 @@ func (r *AchievementRepository) GetAllAchievements() ([]model.Achievement, error
 	return achievements, nil
 }
 
-// GetAchievementByCode retrieves an achievement by its code
 func (r *AchievementRepository) GetAchievementByCode(code string) (*model.Achievement, error) {
 	query := `SELECT id, code, name, description, xp_reward, created_at FROM app.achievements WHERE code = $1`
 
@@ -96,7 +94,6 @@ func (r *AchievementRepository) HasUserEarnedAchievementByCode(userID int64, ach
 	return true, nil
 }
 
-// GetUserAchievements retrieves all achievements earned by a user
 func (r *AchievementRepository) GetUserAchievements(userID int64) ([]model.UserAchievement, error) {
 	query := `
 		SELECT ua.id, ua.user_id, ua.achievement_id, ua.earned_at 
@@ -132,7 +129,6 @@ func (r *AchievementRepository) GetUserAchievements(userID int64) ([]model.UserA
 	return userAchievements, nil
 }
 
-// HasUserEarnedAchievement checks if a user has already earned a specific achievement
 func (r *AchievementRepository) HasUserEarnedAchievement(userID int64, achievementID int64) (bool, error) {
 	query := `SELECT 1 FROM app.user_achievements WHERE user_id = $1 AND achievement_id = $2`
 
@@ -149,7 +145,6 @@ func (r *AchievementRepository) HasUserEarnedAchievement(userID int64, achieveme
 	return true, nil
 }
 
-// GrantAchievementTx grants an achievement to a user within a transaction
 func (r *AchievementRepository) GrantAchievementTx(tx *sql.Tx, userID int64, achievementID int64) error {
 	query := `
 		INSERT INTO app.user_achievements (user_id, achievement_id, earned_at)
@@ -165,7 +160,6 @@ func (r *AchievementRepository) GrantAchievementTx(tx *sql.Tx, userID int64, ach
 	return nil
 }
 
-// GetLessonCompletionsCountForDay returns the number of lessons completed by a user on a specific day
 func (r *AchievementRepository) GetLessonCompletionsCountForDay(userID int64, date time.Time) (int, error) {
 	startOfDay := time.Date(date.Year(), date.Month(), date.Day(), 0, 0, 0, 0, time.UTC)
 	endOfDay := startOfDay.Add(24 * time.Hour)
@@ -184,7 +178,6 @@ func (r *AchievementRepository) GetLessonCompletionsCountForDay(userID int64, da
 	return count, nil
 }
 
-// GetTotalLessonCompletionsCount returns the total number of lessons completed by a user
 func (r *AchievementRepository) GetTotalLessonCompletionsCount(userID int64) (int, error) {
 	query := `SELECT COUNT(*) FROM app.lesson_completions WHERE user_id = $1`
 

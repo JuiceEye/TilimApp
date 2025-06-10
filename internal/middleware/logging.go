@@ -11,28 +11,22 @@ import (
 	"time"
 )
 
-// responseWriter is a custom http.ResponseWriter that captures the response data
 type responseWriter struct {
 	http.ResponseWriter
 	statusCode int
 	buffer     *bytes.Buffer
 }
 
-// WriteHeader captures the status code and passes it to the underlying ResponseWriter
 func (rw *responseWriter) WriteHeader(statusCode int) {
 	rw.statusCode = statusCode
 	rw.ResponseWriter.WriteHeader(statusCode)
 }
 
-// Write captures the response body and passes it to the underlying ResponseWriter
 func (rw *responseWriter) Write(b []byte) (int, error) {
-	// Write to our buffer first
 	rw.buffer.Write(b)
-	// Then write to the original response writer
 	return rw.ResponseWriter.Write(b)
 }
 
-// PrettyPrintJSON formats JSON with indentation
 func PrettyPrintJSON(input []byte) string {
 	var jsonObj interface{}
 	if err := json.Unmarshal(input, &jsonObj); err == nil {

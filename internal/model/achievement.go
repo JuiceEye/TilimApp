@@ -4,7 +4,6 @@ import (
 	"time"
 )
 
-// Achievement represents an achievement that can be earned by users
 type Achievement struct {
 	ID          int64
 	Code        string
@@ -14,7 +13,6 @@ type Achievement struct {
 	CreatedAt   time.Time
 }
 
-// UserAchievement represents an achievement earned by a user
 type UserAchievement struct {
 	ID            int64
 	UserID        int64

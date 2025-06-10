@@ -181,7 +181,6 @@ func (s *ProfileService) ProcessStreakTx(tx *sql.Tx, userID int64, activityDate 
 
 	userProgress.LastLessonCompletedAt = &activityDate
 
-	// Save the updated streak
 	err = s.userProgressRepo.SaveStreakTx(tx, userID, userProgress)
 	if err != nil {
 		return 0, false, err
