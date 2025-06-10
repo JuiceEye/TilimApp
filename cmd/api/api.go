@@ -94,7 +94,7 @@ func (s *Server) Run() error {
 		middleware.SetCorsPolicy,
 	)
 
-	// idk chatgpt said I need to do this instead of Handle(), no clue what the difference is
+	// idk google said I need to do this instead of Handle(), no clue what the difference is
 	mainRouter.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		protectedChain(protectedRouter).ServeHTTP(w, r)
 	})
