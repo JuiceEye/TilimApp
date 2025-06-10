@@ -55,11 +55,11 @@ The `test_data.sql` script creates:
    - Complete any lesson today to earn the achievement
    - Verify the user has earned the LESSON_STREAK_3 achievement
 
-2. **Daily Lessons Achievement (LESSONS_SINGLE_DAY_5)**
+2. **Daily LessonsCompleted Achievement (LESSONS_SINGLE_DAY_5)**
    - Complete one more lesson today to earn the achievement
    - Verify the user has earned the LESSONS_SINGLE_DAY_5 achievement
 
-3. **Total Lessons Achievement (LESSONS_TOTAL_10)**
+3. **Total LessonsCompleted Achievement (LESSONS_TOTAL_10)**
    - Complete one more lesson (any lesson) to earn the achievement
    - Verify the user has earned the LESSONS_TOTAL_10 achievement
 

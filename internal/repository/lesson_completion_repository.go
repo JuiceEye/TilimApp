@@ -12,11 +12,6 @@ type LessonCompletionRepository struct {
 	db *sql.DB
 }
 
-type UserActivity struct {
-	Date             string `json:"date"`
-	LessonsCompleted int64  `json:"lessons_completed"`
-}
-
 func NewLessonCompletionRepo(db *sql.DB) *LessonCompletionRepository {
 	return &LessonCompletionRepository{
 		db: db,

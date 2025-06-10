@@ -269,7 +269,7 @@ func CreateDefaultAchievements(
 		NewLessonStreakAchievement("LESSON_STREAK_7", 7, achievementRepo, userRepo),
 		NewLessonStreakAchievement("LESSON_STREAK_30", 30, achievementRepo, userRepo),
 
-		// Lessons in a single day achievements
+		// LessonsCompleted in a single day achievements
 		NewLessonsSingleDayAchievement("LESSONS_SINGLE_DAY_5", 5, achievementRepo, userRepo),
 
 		// Total lessons achievements

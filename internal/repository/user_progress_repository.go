@@ -12,6 +12,11 @@ type UserProgressRepository struct {
 	db *sql.DB
 }
 
+type UserActivity struct {
+	Date             string
+	LessonsCompleted int64
+}
+
 func NewUserProgressRepo(db *sql.DB) *UserProgressRepository {
 	return &UserProgressRepository{
 		db: db,
@@ -117,11 +122,11 @@ func (r *UserProgressRepository) GetUserActivity(userID int64, startDate, endDat
 	endDate = now.AddDate(0, 0, 1)
 
 	query := `
-        SELECT DATE(last_lesson_completed_at) AS activity_date, COUNT(*) as lessons_count FROM app.user_progress 
+        SELECT DATE(date_completed) AS activity_date, COUNT(*) as lessons_count FROM app.lesson_completions 
         WHERE user_id = $1 
-            AND last_lesson_completed_at >= $2 
-            AND last_lesson_completed_at < $3
-        GROUP BY DATE(last_lesson_completed_at)
+            AND date_completed >= $2 
+            AND date_completed < $3
+        GROUP BY DATE(date_completed)
         ORDER BY activity_date ASC
     `
 

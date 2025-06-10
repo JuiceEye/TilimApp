@@ -13,3 +13,8 @@ type GetProfileResponse struct {
 	LessonsDone      int       `json:"lessons_done"`
 	IsSubscribed     *bool     `json:"is_subscribed,omitempty"`
 }
+
+type UserActivityResponse struct {
+	Date             string `json:"date"`
+	LessonsCompleted int64  `json:"lessons_completed"`
+}
