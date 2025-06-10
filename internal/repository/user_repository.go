@@ -237,14 +237,14 @@ func (r *UserRepository) GetCredentialsByEmail(email string) (*UserCredentials, 
 	return r.getCredentials("email", email)
 }
 
-func (r *UserRepository) IncrementStatsTx(tx *sql.Tx, userID, xp int64) error {
+func (r *UserRepository) IncrementStatsTx(tx *sql.Tx, userID, xp int64, words int) error {
 	query :=
 		`UPDATE app.user_progress
-		SET xp_points = xp_points + $1, lessons_done = lessons_done + 1, updated_at = $2
-		WHERE user_id = $3
+		SET xp_points = xp_points + $1, words_learned = words_learned + COALESCE($2, 0), lessons_done = lessons_done + 1, updated_at = $3
+		WHERE user_id = $4
 	`
 
-	_, err := tx.Exec(query, xp, time.Now().UTC().Truncate(24*time.Hour), userID)
+	_, err := tx.Exec(query, xp, words, time.Now().UTC().Truncate(24*time.Hour), userID)
 	if err != nil {
 		return fmt.Errorf("failed to increment user progress: %w", err)
 	}

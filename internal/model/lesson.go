@@ -6,6 +6,7 @@ type Lesson struct {
 	XP        int64        `json:"xp"`
 	Exercises []Exercise   `json:"exercises,omitempty"`
 	Status    LessonStatus `json:"status"`
+	NewWords  int          `json:"new_words"`
 }
 
 type LessonStatus string

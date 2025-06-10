@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"tilimauth/internal/achievement"
 	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
@@ -43,12 +44,14 @@ func (s *LessonCompletionService) CompleteLesson(completion *model.LessonComplet
 		return err
 	}
 
-	exists, err := s.completionRepo.Exists(userID, lessonID)
+	hasCompleted, err := s.completionRepo.Exists(userID, lessonID)
 	if err != nil {
 		return err
 	}
 
-	if exists {
+	fmt.Println(hasCompleted)
+
+	if hasCompleted {
 		return nil
 	}
 
@@ -63,7 +66,7 @@ func (s *LessonCompletionService) CompleteLesson(completion *model.LessonComplet
 		return err
 	}
 
-	err = s.userRepo.IncrementStatsTx(tx, userID, lesson.XP)
+	err = s.userRepo.IncrementStatsTx(tx, userID, lesson.XP, lesson.NewWords)
 	if err != nil {
 		return err
 	}

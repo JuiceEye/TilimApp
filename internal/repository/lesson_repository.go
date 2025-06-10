@@ -49,13 +49,13 @@ func (r *LessonRepository) GetBySectionIDs(sectionIDs []int64) (map[int64][]mode
 
 func (r *LessonRepository) GetByID(id int64) (*model.Lesson, error) {
 	query := `
-		SELECT id, title, xp
+		SELECT id, title, xp, new_words
 		FROM app.lessons
 		WHERE id = $1
 	`
 
 	var lesson model.Lesson
-	err := r.db.QueryRow(query, id).Scan(&lesson.ID, &lesson.Title, &lesson.XP)
+	err := r.db.QueryRow(query, id).Scan(&lesson.ID, &lesson.Title, &lesson.XP, &lesson.NewWords)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, ErrNotFound
