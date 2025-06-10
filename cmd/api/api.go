@@ -45,6 +45,8 @@ func (s *Server) Run() error {
 	achievementRepo := repository.NewAchievementRepository(s.db)
 
 	achievementService := achievement.NewAchievementService(achievementRepo, userRepo)
+	achievementHandler := handler.NewAchievementHandler(achievementService)
+	achievementHandler.RegisterRoutes(protectedRouter)
 
 	achievement.CreateDefaultAchievements(achievementService, achievementRepo, userRepo)
 
