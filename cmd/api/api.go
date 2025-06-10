@@ -44,10 +44,8 @@ func (s *Server) Run() error {
 	dailyTaskRepo := repository.NewDailyTaskRepository(s.db)
 	achievementRepo := repository.NewAchievementRepository(s.db)
 
-	// Initialize achievement service
 	achievementService := achievement.NewAchievementService(achievementRepo, userRepo)
 
-	// Register default achievements
 	achievement.CreateDefaultAchievements(achievementService, achievementRepo, userRepo)
 
 	dailyTaskService := service.NewDailyTaskService(dailyTaskRepo)
