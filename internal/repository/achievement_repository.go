@@ -189,3 +189,52 @@ func (r *AchievementRepository) GetTotalLessonCompletionsCount(userID int64) (in
 
 	return count, nil
 }
+
+func (r *AchievementRepository) GetAchievementsWithUserStatus(userID int64) ([]model.Achievement, error) {
+	query := `
+        SELECT a.id, a.code, a.name, a.description, a.xp_reward, a.created_at,
+               CASE WHEN ua.user_id IS NOT NULL THEN true ELSE false END as is_unlocked,
+               ua.earned_at
+        FROM app.achievements a
+        LEFT JOIN app.user_achievements ua ON a.id = ua.achievement_id AND ua.user_id = $1
+        ORDER BY a.id
+    `
+
+	rows, err := r.db.Query(query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get achievements with user status: %w", err)
+	}
+	defer rows.Close()
+
+	var achievements []model.Achievement
+	for rows.Next() {
+		var achievement model.Achievement
+		var earnedAt sql.NullTime
+
+		err := rows.Scan(
+			&achievement.ID,
+			&achievement.Code,
+			&achievement.Name,
+			&achievement.Description,
+			&achievement.XPReward,
+			&achievement.CreatedAt,
+			&achievement.IsUnlocked,
+			&earnedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan achievement: %w", err)
+		}
+
+		if earnedAt.Valid {
+			achievement.EarnedAt = &earnedAt.Time
+		}
+
+		achievements = append(achievements, achievement)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating achievements: %w", err)
+	}
+
+	return achievements, nil
+}

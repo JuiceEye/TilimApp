@@ -3,6 +3,7 @@ package achievement
 import (
 	"fmt"
 	"sync"
+	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
 )
 
@@ -66,4 +67,10 @@ func (s *AchievementService) Process(ctx EventContext) error {
 	}
 
 	return nil
+}
+
+func (s *AchievementService) GetAchievements(userID int64) ([]model.Achievement, error) {
+	achievements, err := s.achievementRepo.GetAchievementsWithUserStatus(userID)
+
+	return achievements, err
 }
