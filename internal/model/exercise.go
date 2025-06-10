@@ -6,5 +6,11 @@ type Exercise struct {
 	Text         string   `json:"text"`
 	Image        string   `json:"image"`
 	QuestionText string   `json:"question_text"`
+	Audio        *File    `json:"audio"`
 	Answers      []Answer `json:"answers"`
+}
+
+type File struct {
+	UUID string `json:"uuid"`
+	Body string `json:"body"`
 }

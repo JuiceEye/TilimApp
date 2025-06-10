@@ -29,7 +29,7 @@ func (h *ProfileHandler) RegisterRoutes(router *http.ServeMux) {
 	router.HandleFunc("PATCH /profile/username", h.handleUpdateUsername)
 	router.HandleFunc("PATCH /profile/email", h.handleUpdateEmail)
 	router.HandleFunc("PATCH /profile/password", h.handleUpdatePassword)
-	router.HandleFunc("GET /profile/activity", h.handleGetUserActivity)
+	router.HandleFunc("GET /profile/activity/{user_id}", h.handleGetUserActivity)
 }
 
 func (h *ProfileHandler) handleGetProfile(w http.ResponseWriter, r *http.Request) {
@@ -244,9 +244,9 @@ func (h *ProfileHandler) handleUpdatePassword(w http.ResponseWriter, r *http.Req
 }
 
 func (h *ProfileHandler) handleGetUserActivity(w http.ResponseWriter, r *http.Request) {
-	userID, err := utils.GetUserID(r)
+	userID, err := strconv.ParseInt(r.PathValue("user_id"), 10, 64)
 	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
+		utils.WriteError(w, http.StatusInternalServerError, fmt.Errorf("user_id path param не найден"))
 		return
 	}
 

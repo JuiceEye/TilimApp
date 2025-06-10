@@ -16,7 +16,7 @@ func NewExerciseRepo(db *sql.DB) *ExerciseRepository {
 
 func (r *ExerciseRepository) GetByLessonID(lessonID int64) ([]model.Exercise, error) {
 	query := `
-		SELECT e.id, et.code AS type_code, COALESCE(e.text, ''), COALESCE(e.image, ''), COALESCE(e.question_text, '')
+		SELECT e.id, et.code AS type_code, COALESCE(e.text, ''), COALESCE(e.image, ''), COALESCE(e.question_text, ''), COALESCE(e.audio_uuid, '')
 		FROM app.exercises e
 		INNER JOIN dict.exercise_types et ON e.type_id = et.id
 		WHERE lesson_id = $1
@@ -31,8 +31,14 @@ func (r *ExerciseRepository) GetByLessonID(lessonID int64) ([]model.Exercise, er
 	var exercises []model.Exercise
 	for rows.Next() {
 		var exercise model.Exercise
-		if err := rows.Scan(&exercise.ID, &exercise.TypeCode, &exercise.Text, &exercise.Image, &exercise.QuestionText); err != nil {
+		var audioUUID sql.NullString
+		if err := rows.Scan(&exercise.ID, &exercise.TypeCode, &exercise.Text, &exercise.Image, &exercise.QuestionText, &audioUUID); err != nil {
 			return nil, fmt.Errorf("error scanning section row: %w", err)
+		}
+		if audioUUID.Valid && audioUUID.String != "" {
+			exercise.Audio = &model.File{UUID: audioUUID.String}
+		} else {
+			exercise.Audio = nil
 		}
 		exercises = append(exercises, exercise)
 	}

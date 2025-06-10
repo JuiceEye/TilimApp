@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"tilimauth/internal/assets"
 	"tilimauth/internal/model"
 	"tilimauth/internal/repository"
 )
@@ -32,7 +33,7 @@ func (s *LessonService) GetLessonByID(lessonID int64) (*model.Lesson, error) {
 
 	exercises, err := s.exerciseRepo.GetByLessonID(lesson.ID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get sections: %w", err)
+		return nil, fmt.Errorf("failed to get exercises: %w", err)
 	}
 
 	if len(exercises) == 0 {
@@ -43,6 +44,12 @@ func (s *LessonService) GetLessonByID(lessonID int64) (*model.Lesson, error) {
 	exerciseIDs := make([]int64, len(exercises))
 	for i, exercise := range exercises {
 		exerciseIDs[i] = exercise.ID
+		if exercise.Audio != nil && exercise.Audio.UUID != "" {
+			exercise.Audio.Body, err = assets.LoadAudioByUUID(exercise.Audio.UUID)
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	answersByExercise, err := s.answerRepo.GetByExerciseIDs(exerciseIDs)
