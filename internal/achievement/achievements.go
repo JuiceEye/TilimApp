@@ -47,14 +47,7 @@ func NewLessonsSingleDayAchievement(
 }
 
 func (a *LessonsSingleDayAchievement) Check(ctx EventContext) (bool, error) {
-	// Get the achievement from the database
-	achievement, err := a.achievementRepo.GetAchievementByCode(a.id)
-	if err != nil {
-		return false, fmt.Errorf("failed to get achievement: %w", err)
-	}
-
-	// Check if the user already has this achievement
-	hasAchievement, err := a.achievementRepo.HasUserEarnedAchievement(ctx.UserID, achievement.ID)
+	hasAchievement, err := a.achievementRepo.HasUserEarnedAchievementByCode(ctx.UserID, a.id)
 	if err != nil {
 		return false, fmt.Errorf("failed to check if user has achievement: %w", err)
 	}
@@ -132,14 +125,8 @@ func NewLessonsTotalAchievement(
 }
 
 func (a *LessonsTotalAchievement) Check(ctx EventContext) (bool, error) {
-	// Get the achievement from the database
-	achievement, err := a.achievementRepo.GetAchievementByCode(a.id)
-	if err != nil {
-		return false, fmt.Errorf("failed to get achievement: %w", err)
-	}
-
 	// Check if the user already has this achievement
-	hasAchievement, err := a.achievementRepo.HasUserEarnedAchievement(ctx.UserID, achievement.ID)
+	hasAchievement, err := a.achievementRepo.HasUserEarnedAchievementByCode(ctx.UserID, a.id)
 	if err != nil {
 		return false, fmt.Errorf("failed to check if user has achievement: %w", err)
 	}
@@ -206,14 +193,7 @@ func NewLessonStreakAchievement(
 }
 
 func (a *LessonStreakAchievement) Check(ctx EventContext) (bool, error) {
-	// Get the achievement from the database
-	achievement, err := a.achievementRepo.GetAchievementByCode(a.id)
-	if err != nil {
-		return false, fmt.Errorf("failed to get achievement: %w", err)
-	}
-
-	// Check if the user already has this achievement
-	hasAchievement, err := a.achievementRepo.HasUserEarnedAchievement(ctx.UserID, achievement.ID)
+	hasAchievement, err := a.achievementRepo.HasUserEarnedAchievementByCode(ctx.UserID, a.id)
 	if err != nil {
 		return false, fmt.Errorf("failed to check if user has achievement: %w", err)
 	}

@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/redis/go-redis/v9"
 	"net/http"
 	"strconv"
 	"tilimauth/internal/dto/request"
@@ -16,15 +18,19 @@ import (
 type LessonHandler struct {
 	lessonService     *service.LessonService
 	completionService *service.LessonCompletionService
+	redis             *redis.Client
 }
 
 func NewLessonHandler(
 	lessonService *service.LessonService,
 	completionService *service.LessonCompletionService,
+	redis *redis.Client,
+
 ) *LessonHandler {
 	return &LessonHandler{
 		lessonService:     lessonService,
 		completionService: completionService,
+		redis:             redis,
 	}
 }
 
@@ -48,14 +54,30 @@ func (h *LessonHandler) handleGetLesson(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	lesson, err := h.lessonService.GetLessonByID(payload.LessonID)
-	if err != nil {
-		if errors.Is(err, repository.ErrNotFound) {
-			utils.WriteError(w, http.StatusNotFound, err)
-		} else {
-			utils.WriteError(w, http.StatusInternalServerError, err)
+	ctx := r.Context()
+	isCached := false
+	cacheKey := fmt.Sprintf("lesson:%d", lessonID)
+	lesson := new(model.Lesson)
+
+	cached, err := h.redis.Get(ctx, cacheKey).Result()
+	if err == nil {
+		if err := json.Unmarshal([]byte(cached), &lesson); err == nil {
+			isCached = true
 		}
-		return
+	}
+
+	if !isCached {
+		lesson, err = h.lessonService.GetLessonByID(payload.LessonID)
+		if err != nil {
+			if errors.Is(err, repository.ErrNotFound) {
+				utils.WriteError(w, http.StatusNotFound, err)
+			} else {
+				utils.WriteError(w, http.StatusInternalServerError, err)
+			}
+			return
+		}
+		// raw, _ := json.Marshal(lesson)
+		// h.redis.Set(ctx, cacheKey, raw, time.Hour)
 	}
 
 	err = utils.WriteJSONResponse(w, http.StatusOK, lesson)
