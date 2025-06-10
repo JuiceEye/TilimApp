@@ -97,7 +97,6 @@ type LessonsTotalAchievement struct {
 	requiredCount int
 }
 
-// NewLessonsTotalAchievement creates a new achievement for completing a total number of lessons
 func NewLessonsTotalAchievement(
 	id string,
 	requiredCount int,
