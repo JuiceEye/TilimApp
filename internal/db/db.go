@@ -3,7 +3,8 @@ package db
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
 	"log"
 	"tilimauth/internal/config"
 )
@@ -27,15 +28,18 @@ func NewConfig(envs *config.Env) *Config {
 }
 
 func NewDBConnection(cfg *Config) (*sql.DB, error) {
-	dsn := fmt.Sprintf("user=%s password=%s dbname=%s host=%s port=%s sslmode=require",
-		cfg.user, cfg.password, cfg.name, cfg.host, cfg.port)
-	db, err := sql.Open("postgres", dsn)
+	connString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=require",
+		cfg.user, cfg.password, cfg.host, cfg.port, cfg.name)
 
+	pgxCfg, err := pgx.ParseConfig(connString)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("unable to parse config: %w", err)
 	}
 
-	log.Printf(`[INFO] Connected to db "%s" %s:%s`, cfg.name, cfg.host, cfg.port)
+	pgxCfg.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
 
+	db := stdlib.OpenDB(*pgxCfg)
+
+	log.Printf(`[INFO] Connected to db "%s" %s:%s`, cfg.name, cfg.host, cfg.port)
 	return db, nil
 }
